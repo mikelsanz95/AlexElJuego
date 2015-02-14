@@ -233,6 +233,12 @@ public class PlayerAlex {
         	cordX=0;
         	velMovX=0;
         }
+        else if(cordX>Framework.anchoFrame-playerNotMovingEspadaImg.getWidth())
+        {
+        	cordX=Framework.anchoFrame-playerNotMovingEspadaImg.getWidth();
+        	velMovX=0;
+        }	
+        
         if(!isAtacando)
         {
         playerMovFrontBaculoAnim.changeCoordinates(cordX, cordY);
@@ -361,8 +367,8 @@ public class PlayerAlex {
 		    
 //		playerEspadaAttAnim = new Animation(playerEspadaAttAnimImg, 69, 52, 3, 50, false, cordX , cordY , 0);
 //		playerBaculoAttAnim = new Animation(playerBaculoAttAnimImg, 69, 52, 3, 50, false, cordX , cordY , 0);
-		playerArcoAttFrontAnim = new Animation(playerArcoAttFrontAnimImg, 1360/9, 177, 9, 100, false, cordX , cordY , 0);
-		playerArcoAttBackAnim = new Animation(playerArcoAttBackAnimImg, 1360/9, 177, 9, 100, false, cordX , cordY , 0);
+		playerArcoAttFrontAnim = new Animation(playerArcoAttFrontAnimImg, 1360/9, 177, 9, 60, false, cordX , cordY , 0);
+		playerArcoAttBackAnim = new Animation(playerArcoAttBackAnimImg, 1360/9, 177, 9, 60, false, cordX , cordY , 0);
 	}
 	private void switchDireccion()
 	{
