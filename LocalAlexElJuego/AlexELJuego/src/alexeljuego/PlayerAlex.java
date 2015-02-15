@@ -368,8 +368,8 @@ public class PlayerAlex {
 		    
 //		playerEspadaAttAnim = new Animation(playerEspadaAttAnimImg, 69, 52, 3, 50, false, cordX , cordY , 0);
 //		playerBaculoAttAnim = new Animation(playerBaculoAttAnimImg, 69, 52, 3, 50, false, cordX , cordY , 0);
-		playerArcoAttFrontAnim = new Animation(playerArcoAttFrontAnimImg, 1360/9, 177, 9, 111, false, cordX , cordY , 0);
-		playerArcoAttBackAnim = new Animation(playerArcoAttBackAnimImg, 1360/9, 177, 9, 111, false, cordX , cordY , 0);
+		playerArcoAttFrontAnim = new Animation(playerArcoAttFrontAnimImg, 1360/9, 177, 9, 105, false, cordX , cordY , 0);
+		playerArcoAttBackAnim = new Animation(playerArcoAttBackAnimImg, 1360/9, 177, 9, 105, false, cordX , cordY , 0);
 	}
 	private void switchDireccion()
 	{
@@ -564,7 +564,7 @@ public class PlayerAlex {
 	            velMovX -= acelX;
 	        else    // Stoping
 	            if(velMovX < 0)
-	                velMovX += frenadoX;
+	                velMovX =0;
 	            else if(velMovX >= 0)
 	                velMovX =0;
 	        

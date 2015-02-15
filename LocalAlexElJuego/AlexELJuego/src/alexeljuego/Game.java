@@ -13,19 +13,26 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 
 
+
+
 import alexeljuego.Framework.GameState;
+import alexeljuego.enemigos.stage1.Charizard;
 
 
 
 public class Game{
 	
 	private Random random;
-	
+	public static enum GameStage{STAGE1,STAGE2,STAGE3,STAGE4,STAGE5,STAGE6,STAGE7,TIENDA,ENDLESS}
+	public static GameStage gameStage;
 	private static PlayerAlex player;
-	private ArrayList<Proyectil> proyectilList;
-	
+	private ArrayList<Proyectil> proyectilList;	
 	private BufferedImage skyImg;
 	private BufferedImage grassImg;
+	
+	//Stage 1
+	private ArrayList<Charizard> charizardList;
+	private long tiempoSpawnCharizard;
 	
 	public Game()
     {
@@ -71,20 +78,76 @@ public class Game{
 	{
 			player = new PlayerAlex(0,Framework.altoFrame+300 );
 			proyectilList = new ArrayList<Proyectil>();
-			
+			charizardList = new ArrayList<Charizard>();
 	}
    
  
         
 	public void UpdateGame(long gameTime, Point mousePosition) 
 	{
-		
-		player.Update(gameTime);
+		switch(gameStage)
+		{
+		case ENDLESS:
+		{
+			player.Update(gameTime);
 		createProyectil(gameTime);
 		updateProyectil();
 		
+			break;
+		}
+		case STAGE1:
+		{
+			player.Update(gameTime);
+			createProyectil(gameTime);
+			updateProyectil();
+			createCharizard(gameTime);
+			updateCharizard(gameTime);
+			
+			break;
+		}
+		case STAGE2:
+			break;
+		case STAGE3:
+			break;
+		case STAGE4:
+			break;
+		case STAGE5:
+			break;
+		case STAGE6:
+			break;
+		case STAGE7:
+			break;
+		case TIENDA:
+			break;
+		default:
+			break;
+		
+		}
+		
 	}
 
+	private void updateCharizard(long gameTime) {
+		
+		for(int i=0; i< charizardList.size();i++)
+		{
+		
+			charizardList.get(i).Update(gameTime);
+			
+			
+		}	
+		
+	}
+	private void createCharizard(long gameTime) 
+	{
+		if(gameTime - tiempoSpawnCharizard >= Framework.secEnNanosec*20 )
+		{
+			Charizard c = new Charizard();
+			int cordenX = (int) (Math.random() * (10 - 1) + 1); 
+			int cordenY = (int) (Math.random() * (Framework.altoFrame-c.charizardFlyFrontImg.getHeight() - Framework.anchoFrame/3) + 1); 
+			c.Inicializar(cordenX,cordenY);
+		}
+		
+	}
 	private void updateProyectil() 
 	{
 	try {
