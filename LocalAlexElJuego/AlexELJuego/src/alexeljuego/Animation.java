@@ -132,7 +132,11 @@ public class Animation {
         if(this.tiempoDeCreacionAnimacion + this.desfase <= System.currentTimeMillis())
             g2d.drawImage(animImage, cordX,cordY, cordX + anchoFrame, cordY + altoFrame, xInicialDelFrame, 0, xFinalDelFrame , altoFrame, null);
     }
-
+    
+    public void resetAnim()
+    {
+    	numeroActualFrame=0;
+    }
 
 	public int getAnchoFrame() {
 		return anchoFrame;

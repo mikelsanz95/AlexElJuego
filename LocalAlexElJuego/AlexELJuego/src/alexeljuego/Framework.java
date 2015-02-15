@@ -6,6 +6,8 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 
+import alexeljuego.Game.GameStage;
+
 
 
 
@@ -189,7 +191,7 @@ public class Framework extends Canvas{
 	            case MAIN_MENU:
 	            {
 	            	menuInicial.Draw(g2d);
-//	            	newGame();
+
 	            }
 	                
 	            break;
@@ -230,6 +232,11 @@ public class Framework extends Canvas{
 						{
 						newGame();
 						break;
+						}
+						case 2:
+						{
+						newGame();
+						Game.gameStage=GameStage.ENDLESS;
 						}
 					}	
 					break;

@@ -15,8 +15,10 @@ import javax.imageio.ImageIO;
 
 
 
+
+
+
 import alexeljuego.Framework.GameState;
-import alexeljuego.enemigos.stage1.Charizard;
 
 
 
@@ -33,6 +35,7 @@ public class Game{
 	//Stage 1
 	private ArrayList<Charizard> charizardList;
 	private long tiempoSpawnCharizard;
+	
 	
 	public Game()
     {
@@ -68,6 +71,25 @@ public class Game{
 			skyImg= ImageIO.read( skyImgUrl);
 			URL grassImgUrl  = this.getClass().getResource("resources/images/grassImg.png");	
 			grassImg= ImageIO.read( grassImgUrl);
+			
+			URL charizardMovFrontUrl  = this.getClass().getResource("resources/images/stage1/charizardFlyFront.png");	
+			Charizard.charizardFlyFrontImg= ImageIO.read(charizardMovFrontUrl);                                                 
+			URL charizardMovBackUrl  = this.getClass().getResource("resources/images/stage1/charizardFlyBack.png");		
+			Charizard.charizardFlyBackImg= ImageIO.read(charizardMovBackUrl);                                                   
+			                                                                                                          
+			URL charizardAttFrontUrl  = this.getClass().getResource("resources/images/barraVidaImg.png");		      
+			Charizard.charizardAttFrontImg= ImageIO.read(charizardAttFrontUrl);                                                 
+			                                                                                                          
+			URL charizardAttBackImgUrl  = this.getClass().getResource("resources/images/barraVidaImg.png");		      
+			Charizard.charizardAttBackImg= ImageIO.read(charizardAttBackImgUrl);                                                
+			                                                                                                          
+			URL charizardFlameSpitFrontImgUrl  = this.getClass().getResource("resources/images/barraVidaImg.png");		
+			Charizard.charizardFlameSpitFrontImg= ImageIO.read(charizardFlameSpitFrontImgUrl);                                  
+			                                                                                                          
+			URL charizardFlameSpitBackImgUrl  = this.getClass().getResource("resources/images/barraVidaImg.png");		
+			Charizard.charizardFlameSpitBackImg= ImageIO.read(charizardFlameSpitBackImgUrl);
+			
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -79,6 +101,8 @@ public class Game{
 			player = new PlayerAlex(0,Framework.altoFrame+300 );
 			proyectilList = new ArrayList<Proyectil>();
 			charizardList = new ArrayList<Charizard>();
+			gameStage=GameStage.STAGE1;
+			
 	}
    
  
@@ -130,7 +154,7 @@ public class Game{
 		
 		for(int i=0; i< charizardList.size();i++)
 		{
-		
+			
 			charizardList.get(i).Update(gameTime);
 			
 			
@@ -139,12 +163,18 @@ public class Game{
 	}
 	private void createCharizard(long gameTime) 
 	{
-		if(gameTime - tiempoSpawnCharizard >= Framework.secEnNanosec*20 )
+		if(gameTime - tiempoSpawnCharizard >= Framework.secEnNanosec*5 )
 		{
-			Charizard c = new Charizard();
-			int cordenX = (int) (Math.random() * (10 - 1) + 1); 
-			int cordenY = (int) (Math.random() * (Framework.altoFrame-c.charizardFlyFrontImg.getHeight() - Framework.anchoFrame/3) + 1); 
-			c.Inicializar(cordenX,cordenY);
+			random= new Random();
+			Charizard chari = new Charizard();
+			int cordenX = random.nextInt((Framework.anchoFrame)) + 1; 
+			System.out.println("cordX"+ cordenX);
+			int cordenY = random.nextInt((Framework.altoFrame)- Charizard.charizardFlyFrontImg.getHeight()) + Framework.altoFrame/3+1;  
+			System.out.println("cordY"+ cordenY);
+			chari.Inicializar(cordenX,cordenY);
+			
+			charizardList.add(chari);
+			tiempoSpawnCharizard=gameTime;
 		}
 		
 	}
@@ -213,6 +243,10 @@ public class Game{
 		{
 			proyectilList.get(i).Draw(g2d);
 	
+		}
+		for(int i = 0 ; i< charizardList.size(); i++)
+		{
+			charizardList.get(i).Draw(g2d);
 		}
 	}
 

@@ -476,11 +476,15 @@ public class PlayerAlex {
 		{
 			isAtacando = false;
 			tiempoUltimoFlechas=gameTime;
+			playerArcoAttFrontAnim.resetAnim();
+			playerArcoAttBackAnim.resetAnim();
 		}
 		else if(!Canvas.keyboardKeyState(KeyEvent.VK_SPACE))
 		{
 			isAtacando=false;
 			tiempoUltimoFlechas=gameTime;
+			playerArcoAttFrontAnim.resetAnim();
+			playerArcoAttBackAnim.resetAnim();
 		}
 		
 	}
