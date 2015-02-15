@@ -18,7 +18,7 @@ public class MenuInicial
 	public int opcionSelecionada;
 	private int[] posicionFlecha= new int [4];
 	private BufferedImage flechaOpcion;
-	private long minimoSegPorOpcion = Framework.secEnNanosec;
+	private long minimoSegPorOpcion = Framework.secEnNanosec/5;
 	private long tiempoEnOpcion;
 	
 	
@@ -60,7 +60,9 @@ public class MenuInicial
 	{
 		if(Canvas.keyboardKeyState(KeyEvent.VK_W) && gameTime- tiempoEnOpcion >= minimoSegPorOpcion)
 		{
+			
 		opcionSelecionada--;
+		tiempoEnOpcion=gameTime;
 		if(opcionSelecionada<0)
 		{
 			opcionSelecionada=3;
@@ -69,6 +71,7 @@ public class MenuInicial
 		else if (Canvas.keyboardKeyState(KeyEvent.VK_S) && gameTime- tiempoEnOpcion >= minimoSegPorOpcion)
 		{
 		opcionSelecionada++;
+		tiempoEnOpcion=gameTime;
 		if(opcionSelecionada>3)
 		{
 			opcionSelecionada=0;

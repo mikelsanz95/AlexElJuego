@@ -123,8 +123,9 @@ public class Framework extends Canvas{
                     //...
                 break;
                 case MAIN_MENU:
-                	gameTime += System.nanoTime() - lastTime;
-                    menuInicial.cambiarOpcion(gameTime);
+                	 visualizingTime += System.nanoTime() - lastVisualizingTime;
+                     lastVisualizingTime = System.nanoTime();
+                    menuInicial.cambiarOpcion(visualizingTime);
                 break;
                             	
                 

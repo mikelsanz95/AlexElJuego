@@ -51,7 +51,7 @@ public class PlayerAlex {
    public  long tiempoUltimoFlechas;
    
     
-    public  long tiempoEntreSlash=(long) (0.5*Framework.secEnNanosec);
+    public  long tiempoEntreSlash=(long) (0.2*Framework.secEnNanosec);
     public long tiempoEntreMagias=Framework.secEnNanosec/5;
     public  long tiempoEntreFlechas= Framework.secEnNanosec;
     
@@ -272,6 +272,7 @@ public class PlayerAlex {
 	        if(puntosMagicos< puntosMagicosInit)
 	        {
 	        puntosMagicos+=1;
+	        tiempoUltimaRec= gameTime;
 	        }
 	        else
 	        {
@@ -367,8 +368,8 @@ public class PlayerAlex {
 		    
 //		playerEspadaAttAnim = new Animation(playerEspadaAttAnimImg, 69, 52, 3, 50, false, cordX , cordY , 0);
 //		playerBaculoAttAnim = new Animation(playerBaculoAttAnimImg, 69, 52, 3, 50, false, cordX , cordY , 0);
-		playerArcoAttFrontAnim = new Animation(playerArcoAttFrontAnimImg, 1360/9, 177, 9, 60, false, cordX , cordY , 0);
-		playerArcoAttBackAnim = new Animation(playerArcoAttBackAnimImg, 1360/9, 177, 9, 60, false, cordX , cordY , 0);
+		playerArcoAttFrontAnim = new Animation(playerArcoAttFrontAnimImg, 1360/9, 177, 9, 111, false, cordX , cordY , 0);
+		playerArcoAttBackAnim = new Animation(playerArcoAttBackAnimImg, 1360/9, 177, 9, 111, false, cordX , cordY , 0);
 	}
 	private void switchDireccion()
 	{
@@ -461,7 +462,7 @@ public class PlayerAlex {
 	}
 	public void isArcoAtacando(long gameTime)
 	{
-		if(Canvas.keyboardKeyState(KeyEvent.VK_SPACE))
+		if(Canvas.keyboardKeyState(KeyEvent.VK_SPACE) && puntosStamina>10)
 		{
 			isAtacando=true;			
 			if(gameTime-tiempoUltimoFlechas >= tiempoEntreFlechas && puntosStamina>=30)
@@ -471,9 +472,15 @@ public class PlayerAlex {
 			tocaDisparar=true;
 			}
 		}
-		else
+		else if(Canvas.keyboardKeyState(KeyEvent.VK_SPACE) && puntosStamina <30 )
 		{
 			isAtacando = false;
+			tiempoUltimoFlechas=gameTime;
+		}
+		else if(!Canvas.keyboardKeyState(KeyEvent.VK_SPACE))
+		{
+			isAtacando=false;
+			tiempoUltimoFlechas=gameTime;
 		}
 		
 	}
@@ -486,7 +493,7 @@ public class PlayerAlex {
 			isEnCombo=false;
 			numAtaque=0;
 			isAtacando=false;
-			
+			tiempoEntreSlash=(long) (Framework.secEnNanosec*0.2);
 			
 			
 		}
@@ -495,7 +502,7 @@ public class PlayerAlex {
 			if(numAtaque==0 && puntosStamina>=10)
 			{ 	
 				tiempoEntreSlash= Framework.secEnNanosec/10;
-						puntosStamina-=10;				
+				puntosStamina-=10;				
 				tiempoUltimoSlash=gameTime;
 				isAtacando=true;
 				numAtaque++;
@@ -594,7 +601,7 @@ public class PlayerAlex {
 	  
 	 public void Draw(Graphics2D g2d, long gameTime)
 	 {
-		updatePoof();
+		
 		for(int i=0 ;i<(int)health;i++)
 		{
 		g2d.drawImage(barraVidaImg, 20 + (barraVidaImg.getWidth()+(2*i)), 40, null);
@@ -805,6 +812,7 @@ public class PlayerAlex {
 		{
 			
 		}
+		updatePoof();
 		
 		
 	}
@@ -815,9 +823,9 @@ public class PlayerAlex {
 		for(int i = 0; i < poofAnimList.size(); i++)
         {
            
-            if(!poofAnimList.get(i).active)
+            if(!poofAnimList.get(0).active)
             {
-            	poofAnimList.remove(i);
+            	poofAnimList.remove(0);
             }
          
         }
