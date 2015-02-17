@@ -12,7 +12,17 @@ public abstract class Enemigos
 	
 	public Rectangle2D rec;
 	
+	private boolean timeToStrike;
 	
+
+	public boolean isTimeToStrike() {
+		return timeToStrike;
+	}
+
+	public void setTimeToStrike(boolean timeToStrike) {
+		this.timeToStrike = timeToStrike;
+	}
+
 	public int getCordX() {
 		return cordX;
 	}
@@ -41,5 +51,40 @@ public abstract class Enemigos
 	}
 	public void tocaAcercarse()
 	{}
+
+	public int getCordDisparoX() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public int getCordDisparoY() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public boolean getDireccion() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public int getVelmovProy() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public int GetNumFrames() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public BufferedImage getProy() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public int getDaño() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 	
 }

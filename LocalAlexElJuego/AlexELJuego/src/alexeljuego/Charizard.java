@@ -23,6 +23,7 @@ public class Charizard extends Enemigos {
 	private long tiempoMinCambio = Framework.secEnNanosec*5;
 	private long tiempoUltimoCambio;
 	
+	
 	private boolean cambio;
 	
 	private int vida;
@@ -41,6 +42,11 @@ public class Charizard extends Enemigos {
 	
 	private long tiempoEntreAtaques = Framework.secEnNanosec /2;
 	private long tiempoUltimoataque;
+	
+	private long tiempoDeRecarga= Framework.secEnNanosec*3;
+	private long tiempoUltimaRecarga=0;
+	
+	
 	private int numAtaque ;
 	private boolean atacando;
 	private boolean timeToStrike;
@@ -54,7 +60,9 @@ public class Charizard extends Enemigos {
 	public static BufferedImage charizardFlyBackImg;
 	public static BufferedImage charizardAttBackImg;
 	public static BufferedImage charizardFlameSpitBackImg;
-	               
+	public static BufferedImage proyectilFront;
+	public static BufferedImage proyectilBack;
+	
 	private Animation charizardFlyFrontAnim;
 	private Animation charizardAttFrontAnim;
 	private Animation charizardFlameSpitFrontAnim;
@@ -87,6 +95,7 @@ public class Charizard extends Enemigos {
 		cambio=true;
 		xDesc=true;
 		numAtaque=1;
+		atacando=false;
 		double rng = random.nextDouble()*random.nextInt(2)+0.5;
 		tiempoMinCambio= (long) (Framework.secEnNanosec*rng);
 		tiempoUltimoCambio=0;
@@ -106,18 +115,12 @@ public class Charizard extends Enemigos {
 		{	
 			int distY;
 			int distX;
-			
+			timeToStrike =false;
 			if(mirandoFrente)
 			{
 				if(xDesc)
 				{
 					distX=cordX-player.cordX+charizardFlyFrontImg.getWidth()/4;
-//					if(distX>0)
-//					{
-//						velMovX=-6;
-//						if(distX<6 && distX>0)
-//							velMovX=-1;
-//					}
 					if (distX<0)
 					{
 						velMovX=+6;
@@ -133,30 +136,25 @@ public class Charizard extends Enemigos {
 				}
 			
 			}			
-			else
+			else if(!mirandoFrente)
 			{
 			
 				if(xDesc)
 				{
-					distX=cordX-player.cordX+100;
+					distX=cordX-player.cordX-150;
 					if(distX>0)
 					{
 						velMovX=-6;
 						if(distX<6 && distX>0)
 							velMovX=-1;
+						
 					}
-//					else if (distX<0)
-//					{
-//						velMovX=+6;
-//						if(distX>-6 && distX<0 )
-//							velMovX=+1;
-//						
-//					}
+
 					else if(distX==0)
 					{
 						velMovX=0;
 						xDesc=false;
-						System.out.println("entra");
+						
 						
 					}
 				}
@@ -184,8 +182,10 @@ public class Charizard extends Enemigos {
 				yDesc=false;
 			}				
 			if (!yDesc && !xDesc)
+			{
 			Ia= Ia.ATACANDO;
-		
+			System.out.println("Comienza IA" +gameTime);
+			}
 			break;
 		}
 		case ATACANDO :
@@ -273,34 +273,72 @@ public class Charizard extends Enemigos {
 	
 	public void ataca(long gameTime)
 	{  	
-		atacando=true;		
-		if(gameTime-tiempoUltimoataque>= tiempoEntreAtaques)
-		{
-		int j =random.nextInt(6);
-		if(j==1)
-		{
-			numAtaque=1;
-			timeToStrike=true;
-			tiempoUltimoataque=gameTime;
-			charizardFlameSpitFrontAnim.resetAnim();
-			charizardFlameSpitBackAnim.resetAnim();
-			Ia=Ia.ACERCANDOSE;
-			
+		if(gameTime - tiempoUltimaRecarga >=tiempoDeRecarga && !atacando)
+		{	
+			System.out.println(" puede comenzar un ataque " +  gameTime);
+			tiempoUltimaRecarga=gameTime;
+			tiempoUltimoataque= gameTime;
+			atacando=true;
+		
 		}
-		else if(j==2)
+		else if(atacando && gameTime - tiempoUltimoataque>= tiempoEntreAtaques)
 		{
-			numAtaque=2;
+			
 			timeToStrike=true;
 			tiempoUltimoataque=gameTime;
+		}
+		else if(atacando&& timeToStrike)
+		{
+			timeToStrike=false;
+			atacando=false;
+			tiempoUltimaRecarga=gameTime;
+			Ia=Ia.ACERCANDOSE;
+		}
+		
+//		else if(timeToStrike)
+//		{
+//		atacando=false;
+//		tiempoUltimaRecarga=gameTime;
+//		timeToStrike=false;
+//		tiempoUltimoataque=gameTime;
+//		numAtaque=0;
+//		}
+//		else
+//		{
+//			Ia=Ia.ACERCANDOSE;
+//		}
+//		if(gameTime-tiempoUltimoataque>= tiempoEntreAtaques && atacando )
+//		{
+//		int j =random.nextInt(6);
+//		if(j==1)
+//		{
+//			numAtaque=1;
+//			timeToStrike=true;
+//			tiempoUltimoataque=gameTime;
 //			charizardFlameSpitFrontAnim.resetAnim();
 //			charizardFlameSpitBackAnim.resetAnim();
-			charizardAttFrontAnim.resetAnim();
-			charizardAttBackAnim.resetAnim();
-			Ia=Ia.ACERCANDOSE;
-		}
-		
-		
-		}
+//			Ia=Ia.ACERCANDOSE;
+//			
+//		}
+//		else if(j==2)
+//		{
+//			numAtaque=2;
+//			timeToStrike=true;
+//			tiempoUltimoataque=gameTime;
+//			charizardAttFrontAnim.resetAnim();
+//			charizardAttBackAnim.resetAnim();
+//			Ia=Ia.ACERCANDOSE;
+//		}
+//		
+//		
+//		}
+//		if(!atacando )
+//		{
+//			
+//			tiempoUltimaRecarga=gameTime;
+//			tiempoUltimoataque=gameTime;
+//			Ia=Ia.ACERCANDOSE;
+//		}
 		
 		
 	}
@@ -310,7 +348,7 @@ public class Charizard extends Enemigos {
 		{
 		case ATACANDO:
 		{
-			if(numAtaque==1)
+			if(numAtaque==1 && atacando==true)
 			{
 				if(mirandoFrente)
 				{
@@ -322,7 +360,7 @@ public class Charizard extends Enemigos {
 				}
 				
 			}
-			else if (numAtaque==2)
+			else if (numAtaque==2 && atacando==true)
 			{
 				if(mirandoFrente)
 				{
@@ -332,17 +370,15 @@ public class Charizard extends Enemigos {
 				{
 					charizardAttBackAnim.Draw(g2d);
 				}
-				
-				
-			
+						
 			}
 			else
 			{
-				if(mirandoFrente)
+				if(mirandoFrente && atacando==false)
 				{
 					charizardFlyFrontAnim.Draw(g2d);
 				}
-				else
+				else if(!mirandoFrente && atacando==false )
 				{
 					charizardFlyBackAnim.Draw(g2d);
 				}
@@ -395,10 +431,72 @@ public class Charizard extends Enemigos {
 		
 	}
 	
+	public boolean isTimeToStrike() {
+		return timeToStrike;
+	}
 	
 	@Override
 	public Rectangle2D getRec2D() {
-		// TODO Auto-generated method stub
+		
 		return r2D;
+	}
+	public int getCordDisparoX() {
+		// TODO Auto-generated method stub
+		int r;
+		if(mirandoFrente)
+		{
+			r = cordX+20;
+		}
+		else
+		{
+			r = cordX-200;
+		}	
+		return r;
+	}
+
+	public int getCordDisparoY() {
+		// TODO Auto-generated method stub
+		int r;
+		if(mirandoFrente)
+		{
+			r = cordY+30;
+		}
+		else
+		{
+			r = cordY+30;
+		}	
+		return r;
+	}
+
+	public boolean getDireccion() {
+		// TODO Auto-generated method stub
+		return mirandoFrente;
+	}
+
+	public int getVelmovProy() {
+		// TODO Auto-generated method stub
+		return 10;
+	}
+
+	public int GetNumFrames() {
+		// TODO Auto-generated method stub
+		return 5;
+	}
+
+	public BufferedImage getProy() {
+		// TODO Auto-generated method stub
+		if(mirandoFrente)
+		{
+			return proyectilFront ;
+		}
+		else
+		{
+			return proyectilBack ; 
+		}
+		
+	}
+	public int getDaño() {
+		// TODO Auto-generated method stub
+		return daño;
 	}
 }

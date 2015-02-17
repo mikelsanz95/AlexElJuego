@@ -3,11 +3,8 @@ package alexeljuego;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
-
-
-
-public class Proyectil {
-
+public class ProyectilEnem {
+	
 	private  BufferedImage proyectilImg;
 	private  Animation proyectilAnim;
 	
@@ -39,7 +36,6 @@ public class Proyectil {
 			}
 		}
 	}
-	
 	public boolean isItLeftScreen()
 	{
 	    if(cordX > 0 && cordX < Framework.anchoFrame && cordY > 0 && cordY < Framework.altoFrame)
@@ -70,5 +66,5 @@ public class Proyectil {
 		
 	}
 
-	
+
 }

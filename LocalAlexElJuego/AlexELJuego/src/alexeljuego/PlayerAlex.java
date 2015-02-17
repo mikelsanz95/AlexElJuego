@@ -53,7 +53,7 @@ public class PlayerAlex {
     
     public  long tiempoEntreSlash=(long) (0.2*Framework.secEnNanosec);
     public long tiempoEntreMagias=Framework.secEnNanosec/5;
-    public  long tiempoEntreFlechas= Framework.secEnNanosec;
+    public  long tiempoEntreFlechas= Framework.secEnNanosec/2;
     
 
 
@@ -368,8 +368,8 @@ public class PlayerAlex {
 		    
 //		playerEspadaAttAnim = new Animation(playerEspadaAttAnimImg, 69, 52, 3, 50, false, cordX , cordY , 0);
 //		playerBaculoAttAnim = new Animation(playerBaculoAttAnimImg, 69, 52, 3, 50, false, cordX , cordY , 0);
-		playerArcoAttFrontAnim = new Animation(playerArcoAttFrontAnimImg, 1360/9, 177, 9, 105, false, cordX , cordY , 0);
-		playerArcoAttBackAnim = new Animation(playerArcoAttBackAnimImg, 1360/9, 177, 9, 105, false, cordX , cordY , 0);
+		playerArcoAttFrontAnim = new Animation(playerArcoAttFrontAnimImg, 1360/9, 177, 9, 55, false, cordX , cordY , 0);
+		playerArcoAttBackAnim = new Animation(playerArcoAttBackAnimImg, 1360/9, 177, 9, 55, false, cordX , cordY , 0);
 	}
 	private void switchDireccion()
 	{
