@@ -29,6 +29,7 @@ public class Game{
 	public static GameStage gameStage;
 	private static PlayerAlex player;
 	private ArrayList<Proyectil> proyectilList;	
+	private ArrayList<ProyectilEnem> proyecEnemList;
 	private BufferedImage skyImg;
 	private BufferedImage grassImg;
 	
@@ -113,6 +114,12 @@ public class Game{
 			URL charizardFlameSpitBackImgUrl  = this.getClass().getResource("resources/images/stage1/charizardLlamaradaBack.png");		
 			Charizard.charizardFlameSpitBackImg= ImageIO.read(charizardFlameSpitBackImgUrl);
 			
+			URL proyectilFrontUrl = this.getClass().getResource("resources/images/stage1/flameFront.png");		
+			Charizard.proyectilFront= ImageIO.read(proyectilFrontUrl);
+			
+			URL proyectilBackUrl  = this.getClass().getResource("resources/images/stage1/flameBack.png");		
+			Charizard.proyectilBack= ImageIO.read(proyectilBackUrl);
+			
 			break;
 			}
 			case STAGE2:
@@ -146,6 +153,7 @@ public class Game{
 			player = new PlayerAlex(0,Framework.altoFrame+300 );
 			proyectilList = new ArrayList<Proyectil>();
 			enemigosList = new ArrayList<Enemigos>();
+			proyecEnemList = new ArrayList<ProyectilEnem>();
 			gameStage=GameStage.STAGE1;
 			
 	}
@@ -169,6 +177,11 @@ public class Game{
 			player.Update(gameTime);
 			createProyectil(gameTime);
 			updateProyectil();
+			for(int i = 0;i< enemigosList.size();i++)
+			{
+			createProyectilEnemigo(gameTime, enemigosList.get(i));
+			}
+			updateProyectilEnemigo(gameTime);
 			createCharizard(gameTime);
 			updateEnemigos(gameTime);
 			
@@ -195,6 +208,36 @@ public class Game{
 		
 	}
 
+	private void updateProyectilEnemigo(long gameTime) {
+		for(int i=0; i< proyecEnemList.size();i++)
+		{
+		
+			if(proyecEnemList.get(i).isItLeftScreen())
+			{
+			proyecEnemList.remove(i);
+			continue;
+			}
+			else
+			{
+			ProyectilEnem p= proyecEnemList.get(i);
+			p.Update();
+			
+			}
+			
+		}	
+		
+	}
+	private void createProyectilEnemigo(long gameTime, Enemigos enemigos) 
+	{
+		if(enemigos.isTimeToStrike())
+		{
+			ProyectilEnem pe = new ProyectilEnem();
+			pe.Inicializar(enemigos.getCordDisparoX(), enemigos.getCordDisparoY(), enemigos.getDireccion(), enemigos.getDaño(), enemigos.getVelmovProy(), enemigos.GetNumFrames(), enemigos.getProy());
+			
+			proyecEnemList.add(pe);
+		}
+		
+	}
 	private void updateEnemigos(long gameTime) {
 		
 		for(int i=0; i< enemigosList.size();i++)
@@ -215,7 +258,7 @@ public class Game{
 		
 	}
 	private void createCharizard(long gameTime) 
-	{	if(enemigosList.size()<1)
+	{	if(enemigosList.size()<3)
 		if(gameTime - tiempoSpawnCharizard >= Framework.secEnNanosec )
 		{
 			random= new Random();
@@ -300,6 +343,7 @@ public class Game{
 			proyectilList.get(i).Draw(g2d);
 			
 		}
+		
 		if (enemigosList.size()>0)
 		for(int i = 0 ; i< enemigosList.size(); i++)
 		{	
@@ -312,9 +356,9 @@ public class Game{
 			}
 			else if(enemigosList.get(i).getCordY() + 150	== player.cordY +150)
 			{	
-				enemigosList.get(i).Draw(g2d);
-				player.Draw(g2d, gameTime);
 				
+				player.Draw(g2d, gameTime);
+				enemigosList.get(i).Draw(g2d);
 			}
 			else
 			{
@@ -323,8 +367,15 @@ public class Game{
 			}
 			
 		}
+		
 		else
 		player.Draw(g2d, gameTime);
+		for(int i=0;i<proyecEnemList.size()  ; i++ )
+		{
+			
+			proyecEnemList.get(i).Draw(g2d);
+			
+		}
 	}
 	
 
