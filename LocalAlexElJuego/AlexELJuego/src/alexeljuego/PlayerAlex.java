@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.BackingStoreException;
 
 import javax.imageio.ImageIO;
 
@@ -23,6 +24,11 @@ public class PlayerAlex {
 
 	public  int cordX;
 	public  int cordY;
+	
+	
+	public int cordXRelativa;
+	public int cordYRelativa;
+	
 	private  int healthInit = 100;
 	public int health;	    
 	
@@ -49,9 +55,11 @@ public class PlayerAlex {
    public  long tiempoUltimoSlash;
    public long tiempoUltimoMagias;
    public  long tiempoUltimoFlechas;
+   public long tiempoDesdeSinStam;
    
+   public long tiempoMinRecarga=Framework.secEnNanosec*5;
     
-    public  long tiempoEntreSlash=(long) (0.2*Framework.secEnNanosec);
+    public  long tiempoEntreSlash=(long) (1*Framework.secEnNanosec);
     public long tiempoEntreMagias=Framework.secEnNanosec/5;
     public  long tiempoEntreFlechas= Framework.secEnNanosec/2;
     
@@ -79,7 +87,8 @@ public class PlayerAlex {
     // atributos de juego no visibles
     public boolean mirandoFrente;   
     public boolean armaCambiada;    
-    public boolean isEnCombo;
+    public boolean timeToStrike;
+    public boolean isRecargando;
     public boolean isAtacando;
     public int numAtaque;
     public boolean tocaDisparar;
@@ -91,15 +100,21 @@ public class PlayerAlex {
     
     protected BufferedImage playerMovFrontEspadaAnimImg;
     private BufferedImage playerMovBackEspadaAnimImg;
-    private BufferedImage playerNotMovingEspadaImg;
+    private BufferedImage playerNotMovingEspadaFrontImg;
+    private BufferedImage playerNotMovingEspadaBackImg;
     
     private BufferedImage playerMovFrontBaculoAnimImg;
     private BufferedImage playerMovBackBaculoAnimImg;
-    private BufferedImage playerNotMovingBaculoImg;
+    
+    private BufferedImage playerNotMovingBaculoFrontImg;
+    private BufferedImage playerNotMovingBaculoBackImg;
+    
     
     private BufferedImage playerMovFrontArcoAnimImg;
     private BufferedImage playerMovBackArcoAnimImg;
-    private BufferedImage playerNotMovingArcoImg;
+    
+    private BufferedImage playerNotMovingArcoFrontImg;
+    private BufferedImage playerNotMovingArcoBackImg;
     
     private BufferedImage poofAnimImg;
     private Animation poofAnim;
@@ -116,18 +131,36 @@ public class PlayerAlex {
     private Animation playerMovFrontArcoAnim;
     private Animation playerMovBackArcoAnim;
     
-  //Imagenes y animaciones del del jugador atacando.(por ahora estatico)      
-    private BufferedImage frontSlashImg;
-    private BufferedImage downSlashImg;
-    private BufferedImage upSlashImg;
-    private BufferedImage omniSlashImg;
+  //Imagenes y animaciones del del jugador atacando. 
     
-//    private BufferedImage playerEspadaAttAnimImg;
-//    private BufferedImage playerBaculoAttAnimImg;
+    
+    private BufferedImage frontSlashFrontImg;
+    private BufferedImage frontSlashBackImg;
+    private BufferedImage downSlashFrontImg;
+    private BufferedImage downSlashBackImg;
+    private BufferedImage upSlashFrontImg;
+    private BufferedImage upSlashBackImg;
+    
+    private BufferedImage omniSlashFrontImg;
+    private BufferedImage omniSlashBackImg;
+
     private BufferedImage playerArcoAttFrontAnimImg;
     private BufferedImage playerArcoAttBackAnimImg;
-//    private Animation playerEspadaAttAnim;
-//    private Animation playerBaculoAttAnim;
+//
+    private Animation playerFrontSlashFrontAnim;
+    private Animation playerFrontSlashBackAnim;
+    
+    private Animation playerUpSlashFrontAnim;
+    private Animation playerUpSlashBackAnim;
+    
+    private Animation playerDownSlashFrontAnim;
+    private Animation playerDownSlashBackAnim;
+    
+    private Animation playerOmniSlashFrontAnim;
+    private Animation playerOmniSlashBackAnim;
+    
+    
+    
     private Animation playerArcoAttFrontAnim;
     private Animation playerArcoAttBackAnim;
    
@@ -180,7 +213,7 @@ public class PlayerAlex {
 	    this.puntosStamina=puntosMagicosInit;
 	    armaCambiada=false;
 	    poofAnimList= new ArrayList<Animation>();
-	    isEnCombo=false;
+//	    isEnCombo=false;
 	    isAtacando = false;
 	    this.numAtaque=0;
 	    magiasTotal= new Magias(cordX+ offsetMagiaX, cordY + offsetMagiaY);
@@ -217,9 +250,9 @@ public class PlayerAlex {
 			skillWay();
 			isArcoAtacando(gameTime);
 		}
-        if(cordY>Framework.altoFrame-playerNotMovingEspadaImg.getHeight())
+        if(cordY>Framework.altoFrame-playerNotMovingEspadaFrontImg.getHeight())
     	{
-	    	cordY=Framework.altoFrame-playerNotMovingEspadaImg.getHeight();
+	    	cordY=Framework.altoFrame-playerNotMovingEspadaFrontImg.getHeight();
 	    	velMovY=0;
     	}
         else if(cordY<Framework.altoFrame/3)
@@ -233,9 +266,9 @@ public class PlayerAlex {
         	cordX=0;
         	velMovX=0;
         }
-        else if(cordX>Framework.anchoFrame-playerNotMovingEspadaImg.getWidth())
+        else if(cordX>Framework.anchoFrame-playerNotMovingEspadaFrontImg.getWidth())
         {
-        	cordX=Framework.anchoFrame-playerNotMovingEspadaImg.getWidth();
+        	cordX=Framework.anchoFrame-playerNotMovingEspadaFrontImg.getWidth();
         	velMovX=0;
         }	
         
@@ -279,6 +312,19 @@ public class PlayerAlex {
 	        	puntosMagicos=puntosMagicosInit;
 	        }
         }
+        playerFrontSlashFrontAnim.changeCoordinates(cordX, cordY);
+        playerFrontSlashBackAnim.changeCoordinates(cordX, cordY);
+                                 
+        playerDownSlashBackAnim.changeCoordinates(cordX, cordY);
+        playerDownSlashFrontAnim.changeCoordinates(cordX, cordY);
+                                 
+        playerUpSlashBackAnim.changeCoordinates(cordX, cordY);
+        playerUpSlashFrontAnim.changeCoordinates(cordX, cordY);  
+                                 
+        playerOmniSlashBackAnim.changeCoordinates(cordX, cordY); 
+        playerOmniSlashFrontAnim.changeCoordinates(cordX, cordY);
+                                 
+        
 	}
 	private void LoadContent() 
 	
@@ -286,8 +332,7 @@ public class PlayerAlex {
 		
 		try{
 		
-//		URL playerNotMovANimImgUrl = this.getClass().getResource("resources/images/corazonVidaPng.png");		
-			
+		// Barras de Vida
 		URL barraVidaImgUrl  = this.getClass().getResource("resources/images/barraVidaImg.png");		
 		barraVidaImg= ImageIO.read(barraVidaImgUrl);
 		
@@ -296,43 +341,62 @@ public class PlayerAlex {
 		
 		URL barraStaminaImgUrl  = this.getClass().getResource("resources/images/pStamina.png");		
 		barraStaminaImg = ImageIO.read(barraStaminaImgUrl);
-			
+		
+		//Movimiento espada
 		URL playerMovEspadaFrontAnimImgUrl= this.getClass().getResource("resources/images/espadaMovFront.png");
-		playerMovFrontEspadaAnimImg = ImageIO.read(playerMovEspadaFrontAnimImgUrl); 
-		
+		playerMovFrontEspadaAnimImg = ImageIO.read(playerMovEspadaFrontAnimImgUrl); 		
 		URL playerMovBackEspadaAnimImgUrl= this.getClass().getResource("resources/images/espadaMovBack.png");
-		playerMovBackEspadaAnimImg =ImageIO.read(playerMovBackEspadaAnimImgUrl);
+		playerMovBackEspadaAnimImg =ImageIO.read(playerMovBackEspadaAnimImgUrl);		
+		URL playerNotMovingEspadaFrontAnimImgURL= this.getClass().getResource("resources/images/EstaticFrontEspada.png");
+		playerNotMovingEspadaFrontImg = ImageIO.read(playerNotMovingEspadaFrontAnimImgURL);		
+		URL playerNotMovingEspadaBackAnimImgURL= this.getClass().getResource("resources/images/EstaticBackEspada.png");
+		playerNotMovingEspadaBackImg = ImageIO.read(playerNotMovingEspadaBackAnimImgURL);	
 		
-		URL playerNotMovingEspadaAnimImgURL= this.getClass().getResource("resources/images/EstaticFrontEspada.png");
-		playerNotMovingEspadaImg = ImageIO.read(playerNotMovingEspadaAnimImgURL);
-		
+		// Movimiento baculo
 		URL playerMovFrontBaculoAnimImgUrl= this.getClass().getResource("resources/images/baculoMovFront.png");
-		playerMovFrontBaculoAnimImg= ImageIO.read(playerMovFrontBaculoAnimImgUrl);
-		
+		playerMovFrontBaculoAnimImg= ImageIO.read(playerMovFrontBaculoAnimImgUrl);		
 		URL playerMovBackBaculoAnimImgUrl= this.getClass().getResource("resources/images/baculoMovBack.png");
-		playerMovBackBaculoAnimImg= ImageIO.read(playerMovBackBaculoAnimImgUrl);
+		playerMovBackBaculoAnimImg= ImageIO.read(playerMovBackBaculoAnimImgUrl);		
+		URL playerNotMovingBaculoFrontAnimImgUrl= this.getClass().getResource("resources/images/EstaticFrontBaculo.png");
+		playerNotMovingBaculoFrontImg = ImageIO.read(playerNotMovingBaculoFrontAnimImgUrl);		
+		URL playerNotMovingBaculoBackAnimImgUrl= this.getClass().getResource("resources/images/EstaticBackBaculo.png");
+		playerNotMovingBaculoBackImg = ImageIO.read(playerNotMovingBaculoBackAnimImgUrl);
 		
-		URL playerNotMovingBaculoAnimImgUrl= this.getClass().getResource("resources/images/EstaticFrontBaculo.png");
-		playerNotMovingBaculoImg = ImageIO.read(playerNotMovingBaculoAnimImgUrl);
 		
+		//Movimiento arco
 		URL playerMovFrontArcoAnimImgUrl= this.getClass().getResource("resources/images/arcoMovFront.png");    
-	  	playerMovFrontArcoAnimImg = ImageIO.read(playerMovFrontArcoAnimImgUrl);
-	  	
+	  	playerMovFrontArcoAnimImg = ImageIO.read(playerMovFrontArcoAnimImgUrl);	  	
 	  	URL playerMovBackArcoAnimImgUrl= this.getClass().getResource("resources/images/arcoMovBack.png");
-	  	playerMovBackArcoAnimImg = ImageIO.read(playerMovBackArcoAnimImgUrl);
+	  	playerMovBackArcoAnimImg = ImageIO.read(playerMovBackArcoAnimImgUrl);	  	
+	  	URL playerNotMovingArcoFrontAnimImgUrl= this.getClass().getResource("resources/images/EstaticFrontArco.png");
+	  	playerNotMovingArcoFrontImg = ImageIO.read(playerNotMovingArcoFrontAnimImgUrl) ;
+		URL playerNotMovingArcoBackAnimImgUrl= this.getClass().getResource("resources/images/EstaticBackArco.png");
+	  	playerNotMovingArcoBackImg = ImageIO.read(playerNotMovingArcoBackAnimImgUrl) ;
 	  	
-	  	URL playerNotMovingArcoAnimImgUrl= this.getClass().getResource("resources/images/EstaticFrontArco.png");
-	  	playerNotMovingArcoImg = ImageIO.read(playerNotMovingArcoAnimImgUrl) ;
-		// espadazos!!
+	  	// espadazos!!
 	  	
-	  	URL frontSlashImgUrl= this.getClass().getResource("resources/images/frontSlashImg.png");
-	  	frontSlashImg = ImageIO.read(frontSlashImgUrl) ;
-	  	URL  downSlashImgUrl= this.getClass().getResource("resources/images/downSlashImg.png");
-	  	downSlashImg = ImageIO.read(downSlashImgUrl) ;
-	  	URL upSlashImgUrl= this.getClass().getResource("resources/images/upSlashImg.png");
-	  	upSlashImg = ImageIO.read(upSlashImgUrl) ;
-	  	URL omniSlashUrl = this.getClass().getResource("resources/images/omniSlashImg.png");
-	  	omniSlashImg = ImageIO.read(omniSlashUrl) ;
+	  	URL frontSlashFrontImgUrl= this.getClass().getResource("resources/images/frontSlashFront.png");
+	  	frontSlashFrontImg = ImageIO.read(frontSlashFrontImgUrl) ;
+		URL frontSlashBackImgUrl= this.getClass().getResource("resources/images/frontSlashBack.png");
+	  	frontSlashBackImg = ImageIO.read(frontSlashBackImgUrl) ;
+	  	
+	  	URL  downSlashFrontImgUrl= this.getClass().getResource("resources/images/downSlashFront.png");
+	  	downSlashFrontImg = ImageIO.read(downSlashFrontImgUrl) ;
+	  	URL  downSlashBackImgUrl= this.getClass().getResource("resources/images/downSlashBack.png");
+	  	downSlashBackImg = ImageIO.read(downSlashBackImgUrl) ;	  	
+	  	
+	  	URL upSlashFrontImgUrl= this.getClass().getResource("resources/images/upSlashFront.png");
+	  	upSlashFrontImg = ImageIO.read(upSlashFrontImgUrl) ;
+	  	URL upSlashBackImgUrl= this.getClass().getResource("resources/images/upSlashBack.png");
+	  	upSlashBackImg = ImageIO.read(upSlashBackImgUrl);
+	 
+	  	
+	  	URL omniSlashFrontUrl = this.getClass().getResource("resources/images/omniSlashFront.png");
+	  	omniSlashFrontImg = ImageIO.read(omniSlashFrontUrl) ;
+	  	URL omniSlashBackUrl = this.getClass().getResource("resources/images/omniSlashBack.png");
+	  	omniSlashBackImg = ImageIO.read(omniSlashBackUrl) ;
+	  	
+	  	
 	  	// flechazos
 	  	URL playerArcoAttFrontAnimImgUrl= this.getClass().getResource("resources/images/arcoAttFront.png");
 	  	playerArcoAttFrontAnimImg= ImageIO.read(playerArcoAttFrontAnimImgUrl);
@@ -358,16 +422,26 @@ public class PlayerAlex {
 		playerMovBackEspadaAnim = new Animation(playerMovBackEspadaAnimImg, (int )1412/9, 158, 9, 100, false, cordX , cordY , 0);
 		
 		    
-		playerMovFrontBaculoAnim = new Animation(playerMovFrontBaculoAnimImg, (int)1287/9, 156, 9, 60, false, cordX , cordY , 0);
-		playerMovBackBaculoAnim = new Animation(playerMovBackBaculoAnimImg, (int) 1287/9, 156, 9, 60, false, cordX , cordY , 0);
+		playerMovFrontBaculoAnim = new Animation(playerMovFrontBaculoAnimImg, (int)1287/9, 156, 9, 100, false, cordX , cordY , 0);
+		playerMovBackBaculoAnim = new Animation(playerMovBackBaculoAnimImg, (int) 1287/9, 156, 9, 100, false, cordX , cordY , 0);
 
 		    
 		playerMovFrontArcoAnim = new Animation(playerMovFrontArcoAnimImg,(int) 1368/9, 160, 9, 100, false, cordX , cordY , 0);
 		playerMovBackArcoAnim = new Animation(playerMovBackArcoAnimImg, (int) 1368/9, 160, 9, 100, false, cordX , cordY , 0);
+		// espadazos
+		playerFrontSlashFrontAnim = new Animation(frontSlashFrontImg, 1266/6, 158, 6, 333, false, cordX,cordY, 0);
+		playerFrontSlashBackAnim = new Animation(frontSlashBackImg, 1266/6, 158, 6, 333, false, cordX, cordY, 0);
 		
-		    
-//		playerEspadaAttAnim = new Animation(playerEspadaAttAnimImg, 69, 52, 3, 50, false, cordX , cordY , 0);
-//		playerBaculoAttAnim = new Animation(playerBaculoAttAnimImg, 69, 52, 3, 50, false, cordX , cordY , 0);
+		playerDownSlashBackAnim = new Animation(downSlashBackImg, 965/5, 158, 5, 400, false, cordX, cordY, 0);
+		playerDownSlashFrontAnim = new Animation(downSlashFrontImg, 965/5, 158, 5,400 , false, cordX, cordY, 0);
+		
+		playerUpSlashBackAnim= new Animation(upSlashBackImg, 965/5, 158, 5, 400, false, cordX,cordY, 0);
+		playerUpSlashFrontAnim = new Animation(upSlashFrontImg, 965/5, 158,5, 400, false, cordX,cordY, 0);
+		
+		playerOmniSlashBackAnim = new Animation(omniSlashBackImg, 1940/5, 158, 5, 400, false, cordX, cordY, 0);
+		playerOmniSlashFrontAnim = new Animation(omniSlashFrontImg, 1940/5, 158, 5, 400, false, cordX, cordY, 0);
+		
+		// arco
 		playerArcoAttFrontAnim = new Animation(playerArcoAttFrontAnimImg, 1360/9, 177, 9, 55, false, cordX , cordY , 0);
 		playerArcoAttBackAnim = new Animation(playerArcoAttBackAnimImg, 1360/9, 177, 9, 55, false, cordX , cordY , 0);
 	}
@@ -382,10 +456,7 @@ public class PlayerAlex {
 		{
 			mirandoFrente=false;
 		}
-		else
-		{
-			mirandoFrente=true;
-		}
+		
 	}
 	
 	public void switchArma()
@@ -490,66 +561,171 @@ public class PlayerAlex {
 	}
 	public void isAtacandoEspada(long gameTime)
 	{
-		 
 		
-		if((gameTime-tiempoUltimoSlash) >= (tiempoEntreSlash +tiempoEntreSlash*2) && !Canvas.keyboardKeyState(KeyEvent.VK_SPACE))		
+		if(Canvas.keyboardKeyState(KeyEvent.VK_SPACE))
 		{
-			isEnCombo=false;
-			numAtaque=0;
-			isAtacando=false;
-			tiempoEntreSlash=(long) (Framework.secEnNanosec*0.2);
+			isAtacando=true;
 			
-			
-		}
-		else if( Canvas.keyboardKeyState(KeyEvent.VK_SPACE)&& isEnCombo&&isEspadaUp  && (gameTime-tiempoUltimoSlash)>=tiempoEntreSlash) 
-		{        
-			if(numAtaque==0 && puntosStamina>=10)
-			{ 	
-				tiempoEntreSlash= Framework.secEnNanosec/10;
-				puntosStamina-=10;				
-				tiempoUltimoSlash=gameTime;
-				isAtacando=true;
-				numAtaque++;
-			
-			}
-			else if (numAtaque==1 && puntosStamina>=10)
+			switch (numAtaque)
 			{
-				tiempoEntreSlash= Framework.secEnNanosec/5;
-				puntosStamina-=10;				
-				tiempoUltimoSlash=gameTime;
-				isAtacando=true;				
+			case -1:
+			if(Canvas.keyboardKeyState(KeyEvent.VK_SPACE) && !isRecargando)
+			{				
 				numAtaque++;
 			}
-			else if(numAtaque==2 && puntosStamina>=40)
+			if(gameTime - tiempoDesdeSinStam <= tiempoMinRecarga)
 			{
-				tiempoEntreSlash= Framework.secEnNanosec/5;				
-				puntosStamina-=40;				
-				isEnCombo=false;
+				isAtacando= false;
+				numAtaque=-1;
+				isRecargando=true;
 				tiempoUltimoSlash=gameTime;
-				isAtacando=true;				
-				numAtaque++;
+			}
+			else
+			{
+				isRecargando=false;
+			}
+				
+			break;
+			 
+			case 0:
+				
+			if(puntosStamina<10)
+			{
+			numAtaque=-1;
+			tiempoDesdeSinStam=gameTime;
+			}
+			else
+			{
+				if(Canvas.keyboardKeyState(KeyEvent.VK_SPACE)&& gameTime -tiempoUltimoSlash<= tiempoEntreSlash && !isRecargando && puntosStamina>=10)
+				{
+				
+				timeToStrike=true;	
+				}
+				else if(!Canvas.keyboardKeyState(KeyEvent.VK_SPACE) && gameTime -tiempoUltimoSlash <= tiempoEntreSlash && timeToStrike)
+				{
+							
+				}
+				else if(!Canvas.keyboardKeyState(KeyEvent.VK_SPACE)&& gameTime -tiempoUltimoSlash >= tiempoEntreSlash )
+				{
+				numAtaque=-1;
+				timeToStrike=false;
+				isAtacando=false;
+				tiempoUltimoSlash=gameTime;
+				}
+				else
+				{
+					tiempoUltimoSlash=gameTime;
+					puntosStamina-=10;
+					numAtaque++;
+					timeToStrike=false;
+				}
 				
 			}
-			else if(numAtaque>3)
+			break;
+			case 1:
+				
+			if(puntosStamina<10)
 			{
-				tiempoEntreSlash=Framework.secEnNanosec/50;
-				numAtaque=0;
+			numAtaque=-1;
+			tiempoDesdeSinStam=gameTime;
+			}			
+			else
+			{
+				if(Canvas.keyboardKeyState(KeyEvent.VK_SPACE)&& gameTime -tiempoUltimoSlash<= tiempoEntreSlash && !isRecargando && puntosStamina>=10)
+				{
+				
+				timeToStrike=true;	
+				}
+				else if(!Canvas.keyboardKeyState(KeyEvent.VK_SPACE)&& gameTime -tiempoUltimoSlash <= tiempoEntreSlash && timeToStrike)
+				{
+					
+				}
+				else if(!Canvas.keyboardKeyState(KeyEvent.VK_SPACE)&& gameTime -tiempoUltimoSlash >= tiempoEntreSlash )
+				{
+				numAtaque=-1;
+				timeToStrike=false;
+				isAtacando=false;
+				}
+				else
+				{
+					tiempoUltimoSlash=gameTime;
+					puntosStamina-=10;
+					numAtaque++;
+					timeToStrike=false;
+				}
+			}
+			break;
+			
+			case 2:
+			if(puntosStamina<10)
+			{
+			numAtaque=-1;
+			tiempoDesdeSinStam=gameTime;
+			}
+			else
+			{
+				
+			
+				if(Canvas.keyboardKeyState(KeyEvent.VK_SPACE)&& gameTime -tiempoUltimoSlash<= tiempoEntreSlash && !isRecargando && puntosStamina>=10)
+				{
+				
+				timeToStrike=true;	
+				}
+				else if(!Canvas.keyboardKeyState(KeyEvent.VK_SPACE)&& gameTime -tiempoUltimoSlash <= tiempoEntreSlash && timeToStrike)
+				{
+				
+				}
+				else if(!Canvas.keyboardKeyState(KeyEvent.VK_SPACE)&& gameTime -tiempoUltimoSlash >= tiempoEntreSlash )
+				{
+				
+				}
+				else					
+				{
+					tiempoUltimoSlash=gameTime;
+					puntosStamina-=10;
+					numAtaque++;
+					timeToStrike=false;
+				}
+			}			
+			break;
+			
+			case 3:
+			if(puntosStamina<10)
+			{
+			numAtaque=-1;
+			tiempoDesdeSinStam=gameTime;
+			}
+			else
+			{
+				if(Canvas.keyboardKeyState(KeyEvent.VK_SPACE)&& gameTime -tiempoUltimoSlash<= tiempoEntreSlash && !isRecargando && puntosStamina>=30)
+				{
+				
+				timeToStrike=true;	
+				}
+				else if(!Canvas.keyboardKeyState(KeyEvent.VK_SPACE)&& gameTime -tiempoUltimoSlash <= tiempoEntreSlash && timeToStrike)
+				{
+				
+				}
+				else
+				{
+					tiempoUltimoSlash=gameTime;
+					numAtaque=-1;
+					timeToStrike=false;
+				}
+			}
+			break;	
+			
+			
+			
+			
 			}
 			
-		 } 
-		 else if( Canvas.keyboardKeyState(KeyEvent.VK_SPACE) && (gameTime-tiempoUltimoSlash)>=tiempoEntreSlash && puntosStamina>=10)
-		 {		
-			 puntosStamina-=10;
-			 isEnCombo=true;			 
-			 tiempoUltimoSlash=gameTime;
-			 isAtacando=true;
-			 numAtaque=0;			
-			
-			 
-		 }
-		 
+		}
 		
-	 
+		
+		
+		
+ 
 	 }
 
 	public boolean isBaculoUp() {
@@ -640,7 +816,10 @@ public class PlayerAlex {
 			else if(!Canvas.keyboardKeyState(KeyEvent.VK_W)&&!Canvas.keyboardKeyState(KeyEvent.VK_A)&&!Canvas.keyboardKeyState(KeyEvent.VK_S)&&!Canvas.keyboardKeyState(KeyEvent.VK_D))
 			{
 				
-				g2d.drawImage(playerNotMovingBaculoImg, cordX, cordY, null);
+				if(mirandoFrente)
+				g2d.drawImage(playerNotMovingBaculoFrontImg, cordX, cordY, null);
+				else
+				g2d.drawImage(playerNotMovingBaculoBackImg, cordX, cordY, null);
 				if(armaCambiada==true && poofAnimList.size()==0)
 				{	
 					
@@ -672,28 +851,46 @@ public class PlayerAlex {
 			{
 				switch (numAtaque)
 				{
+					case -1:
+					if(mirandoFrente)
+					g2d.drawImage(playerNotMovingBaculoFrontImg, cordX, cordY, null);
+					else
+					g2d.drawImage(playerNotMovingBaculoBackImg, cordX, cordY, null);	
+					break;
 				
 					case 0:
 					{  	
-						g2d.drawImage(frontSlashImg, cordX, cordY, null);
-						
+					if(timeToStrike)
+					{
+						if(mirandoFrente)
+						playerFrontSlashFrontAnim.Draw(g2d);
+						else
+						playerFrontSlashBackAnim.Draw(g2d);
+					}
 						break;
 					}
 					case 1:
 					{	
-						g2d.drawImage(upSlashImg,cordX,cordY,null);
-						
+						if(mirandoFrente)
+						playerUpSlashFrontAnim.Draw(g2d);
+						else
+						playerUpSlashBackAnim.Draw(g2d);
 						break;
 					}
 					case 2:
 					{
-						g2d.drawImage(downSlashImg,cordX,cordY,null);
-						
+						if(mirandoFrente)
+						playerDownSlashFrontAnim.Draw(g2d);
+						else
+						playerDownSlashBackAnim.Draw(g2d);
 						break;
 					}
 					case 3:
 					{
-						g2d.drawImage(omniSlashImg,cordX,cordY,null);	
+						if(mirandoFrente)
+						playerOmniSlashFrontAnim.Draw(g2d);
+						else
+						playerOmniSlashBackAnim.Draw(g2d);
 						
 						break;
 						
@@ -720,8 +917,10 @@ public class PlayerAlex {
 			}
 			else if(!Canvas.keyboardKeyState(KeyEvent.VK_W)&&!Canvas.keyboardKeyState(KeyEvent.VK_A)&&!Canvas.keyboardKeyState(KeyEvent.VK_S) && !Canvas.keyboardKeyState(KeyEvent.VK_D))
 			{
-				
-				g2d.drawImage(playerNotMovingEspadaImg, cordX, cordY, null);
+				if(mirandoFrente)
+				g2d.drawImage(playerNotMovingEspadaFrontImg, cordX, cordY, null);
+				else
+				g2d.drawImage(playerNotMovingEspadaBackImg, cordX, cordY, null);
 				if(armaCambiada==true && poofAnimList.size()==0)
 				{	
 					
@@ -779,8 +978,11 @@ public class PlayerAlex {
 			}
 			else if(!Canvas.keyboardKeyState(KeyEvent.VK_W)&&!Canvas.keyboardKeyState(KeyEvent.VK_A)&&!Canvas.keyboardKeyState(KeyEvent.VK_S) && !Canvas.keyboardKeyState(KeyEvent.VK_D))
 			{
-			
-				g2d.drawImage(playerNotMovingArcoImg, cordX, cordY, null);
+				if(mirandoFrente)
+				g2d.drawImage(playerNotMovingArcoFrontImg, cordX, cordY, null);
+				else
+				g2d.drawImage(playerNotMovingArcoBackImg, cordX, cordY, null);
+				
 				if(armaCambiada==true && poofAnimList.size()==0)
 				{	
 					

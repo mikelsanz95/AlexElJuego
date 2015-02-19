@@ -258,7 +258,7 @@ public class Game{
 		
 	}
 	private void createCharizard(long gameTime) 
-	{	if(enemigosList.size()<3)
+	{	if(enemigosList.size()<1)
 		if(gameTime - tiempoSpawnCharizard >= Framework.secEnNanosec )
 		{
 			random= new Random();
