@@ -20,6 +20,7 @@ import javax.imageio.ImageIO;
 
 
 
+
 public class PlayerAlex {
 
 	public  int cordX;
@@ -46,6 +47,9 @@ public class PlayerAlex {
     //flechas y arco 
     private ArcoFlechas carcaj;
     
+    //Slash Hit
+    private SlashHits slash;
+    
     // daño de ataque
     public int daño;
    
@@ -59,7 +63,7 @@ public class PlayerAlex {
    
    public long tiempoMinRecarga=Framework.secEnNanosec*5;
     
-    public  long tiempoEntreSlash=(long) (1*Framework.secEnNanosec);
+    public  long tiempoEntreSlash=  Framework.secEnNanosec/2;
     public long tiempoEntreMagias=Framework.secEnNanosec/5;
     public  long tiempoEntreFlechas= Framework.secEnNanosec/2;
     
@@ -215,7 +219,9 @@ public class PlayerAlex {
 	    poofAnimList= new ArrayList<Animation>();
 //	    isEnCombo=false;
 	    isAtacando = false;
-	    this.numAtaque=0;
+	    this.numAtaque=-1;
+	    slash= new SlashHits();
+	    slash.Inicializar(cordX, cordY);	    
 	    magiasTotal= new Magias(cordX+ offsetMagiaX, cordY + offsetMagiaY);
 	    carcaj= new ArcoFlechas();
 	}
@@ -312,19 +318,8 @@ public class PlayerAlex {
 	        	puntosMagicos=puntosMagicosInit;
 	        }
         }
-        playerFrontSlashFrontAnim.changeCoordinates(cordX, cordY);
-        playerFrontSlashBackAnim.changeCoordinates(cordX, cordY);
                                  
-        playerDownSlashBackAnim.changeCoordinates(cordX, cordY);
-        playerDownSlashFrontAnim.changeCoordinates(cordX, cordY);
-                                 
-        playerUpSlashBackAnim.changeCoordinates(cordX, cordY);
-        playerUpSlashFrontAnim.changeCoordinates(cordX, cordY);  
-                                 
-        playerOmniSlashBackAnim.changeCoordinates(cordX, cordY); 
-        playerOmniSlashFrontAnim.changeCoordinates(cordX, cordY);
-                                 
-        
+        slash.Update(numAtaque, cordX, cordY);
 	}
 	private void LoadContent() 
 	
@@ -374,27 +369,8 @@ public class PlayerAlex {
 	  	playerNotMovingArcoBackImg = ImageIO.read(playerNotMovingArcoBackAnimImgUrl) ;
 	  	
 	  	// espadazos!!
-	  	
-	  	URL frontSlashFrontImgUrl= this.getClass().getResource("resources/images/frontSlashFront.png");
-	  	frontSlashFrontImg = ImageIO.read(frontSlashFrontImgUrl) ;
-		URL frontSlashBackImgUrl= this.getClass().getResource("resources/images/frontSlashBack.png");
-	  	frontSlashBackImg = ImageIO.read(frontSlashBackImgUrl) ;
-	  	
-	  	URL  downSlashFrontImgUrl= this.getClass().getResource("resources/images/downSlashFront.png");
-	  	downSlashFrontImg = ImageIO.read(downSlashFrontImgUrl) ;
-	  	URL  downSlashBackImgUrl= this.getClass().getResource("resources/images/downSlashBack.png");
-	  	downSlashBackImg = ImageIO.read(downSlashBackImgUrl) ;	  	
-	  	
-	  	URL upSlashFrontImgUrl= this.getClass().getResource("resources/images/upSlashFront.png");
-	  	upSlashFrontImg = ImageIO.read(upSlashFrontImgUrl) ;
-	  	URL upSlashBackImgUrl= this.getClass().getResource("resources/images/upSlashBack.png");
-	  	upSlashBackImg = ImageIO.read(upSlashBackImgUrl);
-	 
-	  	
-	  	URL omniSlashFrontUrl = this.getClass().getResource("resources/images/omniSlashFront.png");
-	  	omniSlashFrontImg = ImageIO.read(omniSlashFrontUrl) ;
-	  	URL omniSlashBackUrl = this.getClass().getResource("resources/images/omniSlashBack.png");
-	  	omniSlashBackImg = ImageIO.read(omniSlashBackUrl) ;
+
+	  	slash.LoadContent();
 	  	
 	  	
 	  	// flechazos
@@ -429,17 +405,7 @@ public class PlayerAlex {
 		playerMovFrontArcoAnim = new Animation(playerMovFrontArcoAnimImg,(int) 1368/9, 160, 9, 100, false, cordX , cordY , 0);
 		playerMovBackArcoAnim = new Animation(playerMovBackArcoAnimImg, (int) 1368/9, 160, 9, 100, false, cordX , cordY , 0);
 		// espadazos
-		playerFrontSlashFrontAnim = new Animation(frontSlashFrontImg, 1266/6, 158, 6, 333, false, cordX,cordY, 0);
-		playerFrontSlashBackAnim = new Animation(frontSlashBackImg, 1266/6, 158, 6, 333, false, cordX, cordY, 0);
 		
-		playerDownSlashBackAnim = new Animation(downSlashBackImg, 965/5, 158, 5, 400, false, cordX, cordY, 0);
-		playerDownSlashFrontAnim = new Animation(downSlashFrontImg, 965/5, 158, 5,400 , false, cordX, cordY, 0);
-		
-		playerUpSlashBackAnim= new Animation(upSlashBackImg, 965/5, 158, 5, 400, false, cordX,cordY, 0);
-		playerUpSlashFrontAnim = new Animation(upSlashFrontImg, 965/5, 158,5, 400, false, cordX,cordY, 0);
-		
-		playerOmniSlashBackAnim = new Animation(omniSlashBackImg, 1940/5, 158, 5, 400, false, cordX, cordY, 0);
-		playerOmniSlashFrontAnim = new Animation(omniSlashFrontImg, 1940/5, 158, 5, 400, false, cordX, cordY, 0);
 		
 		// arco
 		playerArcoAttFrontAnim = new Animation(playerArcoAttFrontAnimImg, 1360/9, 177, 9, 55, false, cordX , cordY , 0);
@@ -561,172 +527,57 @@ public class PlayerAlex {
 	}
 	public void isAtacandoEspada(long gameTime)
 	{
-		
-		if(Canvas.keyboardKeyState(KeyEvent.VK_SPACE))
-		{
-			isAtacando=true;
-			
-			switch (numAtaque)
+		if(isAtacando)
+		{	
+//			if(gameTime- tiempoUltimoSlash >= tiempoEntreSlash+Framework.secEnNanosec*0.5)
+//			{
+//				
+//			}
+//		    else 
+			if( gameTime- tiempoUltimoSlash >= tiempoEntreSlash)
 			{
-			case -1:
-			if(Canvas.keyboardKeyState(KeyEvent.VK_SPACE) && !isRecargando)
-			{				
-				numAtaque++;
-			}
-			if(gameTime - tiempoDesdeSinStam <= tiempoMinRecarga)
-			{
-				isAtacando= false;
-				numAtaque=-1;
-				isRecargando=true;
-				tiempoUltimoSlash=gameTime;
-			}
-			else
-			{
-				isRecargando=false;
-			}
-				
-			break;
-			 
-			case 0:
-				
-			if(puntosStamina<10)
-			{
-			numAtaque=-1;
-			tiempoDesdeSinStam=gameTime;
-			}
-			else
-			{
-				if(Canvas.keyboardKeyState(KeyEvent.VK_SPACE)&& gameTime -tiempoUltimoSlash<= tiempoEntreSlash && !isRecargando && puntosStamina>=10)
-				{
-				
-				timeToStrike=true;	
-				}
-				else if(!Canvas.keyboardKeyState(KeyEvent.VK_SPACE) && gameTime -tiempoUltimoSlash <= tiempoEntreSlash && timeToStrike)
-				{
-							
-				}
-				else if(!Canvas.keyboardKeyState(KeyEvent.VK_SPACE)&& gameTime -tiempoUltimoSlash >= tiempoEntreSlash )
-				{
-				numAtaque=-1;
-				timeToStrike=false;
-				isAtacando=false;
-				tiempoUltimoSlash=gameTime;
-				}
-				else
-				{
-					tiempoUltimoSlash=gameTime;
-					puntosStamina-=10;
 					numAtaque++;
-					timeToStrike=false;
-				}
-				
-			}
-			break;
-			case 1:
-				
-			if(puntosStamina<10)
-			{
-			numAtaque=-1;
-			tiempoDesdeSinStam=gameTime;
-			}			
-			else
-			{
-				if(Canvas.keyboardKeyState(KeyEvent.VK_SPACE)&& gameTime -tiempoUltimoSlash<= tiempoEntreSlash && !isRecargando && puntosStamina>=10)
-				{
-				
-				timeToStrike=true;	
-				}
-				else if(!Canvas.keyboardKeyState(KeyEvent.VK_SPACE)&& gameTime -tiempoUltimoSlash <= tiempoEntreSlash && timeToStrike)
-				{
+					if(numAtaque==0)
+					{
+						puntosStamina-=10;
+					}
+					else if(numAtaque==1)
+					{
+						puntosStamina-=10;
+					}
+					else if(numAtaque==2)
+					{
+						puntosStamina-=10;
+					}
+					else if(numAtaque==3)
+					{
+						puntosStamina-=30;
+					}
 					
-				}
-				else if(!Canvas.keyboardKeyState(KeyEvent.VK_SPACE)&& gameTime -tiempoUltimoSlash >= tiempoEntreSlash )
-				{
-				numAtaque=-1;
-				timeToStrike=false;
-				isAtacando=false;
-				}
-				else
-				{
-					tiempoUltimoSlash=gameTime;
-					puntosStamina-=10;
-					numAtaque++;
-					timeToStrike=false;
-				}
+					if( numAtaque>3 )
+				    {
+					    	numAtaque=0;
+				    }
+					isAtacando=false;
+					
 			}
-			break;
-			
-			case 2:
-			if(puntosStamina<10)
+		}
+		else
+		{
+		    if(Canvas.keyboardKeyState(KeyEvent.VK_SPACE ))
 			{
-			numAtaque=-1;
-			tiempoDesdeSinStam=gameTime;
+				isAtacando=true;
+				tiempoUltimoSlash=gameTime;
 			}
-			else
-			{
-				
-			
-				if(Canvas.keyboardKeyState(KeyEvent.VK_SPACE)&& gameTime -tiempoUltimoSlash<= tiempoEntreSlash && !isRecargando && puntosStamina>=10)
-				{
-				
-				timeToStrike=true;	
-				}
-				else if(!Canvas.keyboardKeyState(KeyEvent.VK_SPACE)&& gameTime -tiempoUltimoSlash <= tiempoEntreSlash && timeToStrike)
-				{
-				
-				}
-				else if(!Canvas.keyboardKeyState(KeyEvent.VK_SPACE)&& gameTime -tiempoUltimoSlash >= tiempoEntreSlash )
-				{
-				
-				}
-				else					
-				{
-					tiempoUltimoSlash=gameTime;
-					puntosStamina-=10;
-					numAtaque++;
-					timeToStrike=false;
-				}
-			}			
-			break;
-			
-			case 3:
-			if(puntosStamina<10)
-			{
-			numAtaque=-1;
-			tiempoDesdeSinStam=gameTime;
-			}
-			else
-			{
-				if(Canvas.keyboardKeyState(KeyEvent.VK_SPACE)&& gameTime -tiempoUltimoSlash<= tiempoEntreSlash && !isRecargando && puntosStamina>=30)
-				{
-				
-				timeToStrike=true;	
-				}
-				else if(!Canvas.keyboardKeyState(KeyEvent.VK_SPACE)&& gameTime -tiempoUltimoSlash <= tiempoEntreSlash && timeToStrike)
-				{
-				
-				}
-				else
-				{
-					tiempoUltimoSlash=gameTime;
-					numAtaque=-1;
-					timeToStrike=false;
-				}
-			}
-			break;	
-			
-			
-			
-			
-			}
-			
+		    if( numAtaque>3 )
+		    {
+		    	numAtaque=3;
+		    }
 		}
 		
-		
-		
-		
- 
-	 }
+	
+
+	}
 
 	public boolean isBaculoUp() {
 		return isBaculoUp;
@@ -849,54 +700,7 @@ public class PlayerAlex {
 			
 			if(isAtacando)
 			{
-				switch (numAtaque)
-				{
-					case -1:
-					if(mirandoFrente)
-					g2d.drawImage(playerNotMovingBaculoFrontImg, cordX, cordY, null);
-					else
-					g2d.drawImage(playerNotMovingBaculoBackImg, cordX, cordY, null);	
-					break;
-				
-					case 0:
-					{  	
-					if(timeToStrike)
-					{
-						if(mirandoFrente)
-						playerFrontSlashFrontAnim.Draw(g2d);
-						else
-						playerFrontSlashBackAnim.Draw(g2d);
-					}
-						break;
-					}
-					case 1:
-					{	
-						if(mirandoFrente)
-						playerUpSlashFrontAnim.Draw(g2d);
-						else
-						playerUpSlashBackAnim.Draw(g2d);
-						break;
-					}
-					case 2:
-					{
-						if(mirandoFrente)
-						playerDownSlashFrontAnim.Draw(g2d);
-						else
-						playerDownSlashBackAnim.Draw(g2d);
-						break;
-					}
-					case 3:
-					{
-						if(mirandoFrente)
-						playerOmniSlashFrontAnim.Draw(g2d);
-						else
-						playerOmniSlashBackAnim.Draw(g2d);
-						
-						break;
-						
-					}
-				
-				}
+				slash.Draw(g2d, mirandoFrente);
 				
 			}
 			
@@ -956,7 +760,7 @@ public class PlayerAlex {
 				}
 				else
 				{
-					System.out.println("dibujaBack");
+					
 					playerArcoAttBackAnim.Draw(g2d);
 				}
 				

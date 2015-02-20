@@ -184,7 +184,7 @@ public class Charizard extends Enemigos {
 			if (!yDesc && !xDesc)
 			{
 			Ia= Ia.ATACANDO;
-			System.out.println("Comienza IA" +gameTime);
+			
 			}
 			break;
 		}
@@ -275,7 +275,7 @@ public class Charizard extends Enemigos {
 	{  	
 		if(gameTime - tiempoUltimaRecarga >=tiempoDeRecarga && !atacando)
 		{	
-			System.out.println(" puede comenzar un ataque " +  gameTime);
+			
 			tiempoUltimaRecarga=gameTime;
 			tiempoUltimoataque= gameTime;
 			atacando=true;

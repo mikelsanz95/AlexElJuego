@@ -264,9 +264,9 @@ public class Game{
 			random= new Random();
 			Charizard chari = new Charizard();
 			int cordenX = random.nextInt((Framework.anchoFrame)-Charizard.charizardFlyFrontImg.getWidth()/4) + 1; 
-			System.out.println("cordX"+ cordenX);
+			
 			int cordenY = random.nextInt((Framework.altoFrame)- Charizard.charizardFlyFrontImg.getHeight()) + Framework.altoFrame/3+1;  
-			System.out.println("cordY"+ cordenY);
+			
 			chari.Inicializar(cordenX,cordenY);
 			
 			enemigosList.add(chari);

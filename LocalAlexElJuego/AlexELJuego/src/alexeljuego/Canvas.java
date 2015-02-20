@@ -70,6 +70,10 @@ public abstract class Canvas extends JPanel implements KeyListener, MouseListene
     {
         return estadoTeclado[key];
     }
+    public static void restartKeyboard()
+    {
+    	estadoTeclado = new boolean[525];
+    }
     
     //Escuchadores...
     @Override
