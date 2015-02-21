@@ -12,10 +12,10 @@ public class Proyectil {
 	private  Animation proyectilAnim;
 	
 	
-	private int daño;
+	public int daño;
 	public int cordX;
-	private int cordY;
-	
+	public int cordY;
+	private int numFrames;
 	private int velMovX;	
 	private boolean direccion;
 	
@@ -63,12 +63,21 @@ public class Proyectil {
 		this.daño = daño;
 		this.direccion=direccion;		
 		this.proyectilImg= proyectilImg;
-		
+		this.numFrames=numFrames;
 		this.proyectilAnim=new Animation(proyectilImg, proyectilImg.getWidth()/numFrames, proyectilImg.getHeight(), numFrames, 60, true, cordX, cordY, 0);
 		
 		this.velMovX=velMovX;
 		
 	}
+	public int getImagenWidth()
+	{
+		return proyectilImg.getWidth()/numFrames;
+	}
+	public int getImagenHeigth()
+	{
+		return proyectilImg.getHeight();
+	}
+	
 
 	
 }

@@ -9,7 +9,16 @@ public abstract class Enemigos
 {
 	private int cordX;
 	private int cordY;
+	private int vida;
 	
+	public int getVida() {
+		return vida;
+	}
+
+	public void setVida(int vida) {
+		this.vida = vida;
+	}
+
 	public Rectangle2D rec;
 	
 	private boolean timeToStrike;

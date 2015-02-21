@@ -77,12 +77,12 @@ public class Charizard extends Enemigos {
 	@SuppressWarnings("static-access")
 	public void Inicializar(int cordX , int cordY)
 	{
-		
+		this.vida=200;
 		this.cordX = cordX;
 		this.cordY = cordY;
 		velMovX = 0;
 		velMovY = 0;
-		this.daño=0;
+		this.daño=20;
 		this.dañoLlama = 20;
 		this.dañoZarpa = 30;
 		rangoDeTaunt= 10;
@@ -101,7 +101,7 @@ public class Charizard extends Enemigos {
 		double rng = random.nextDouble()*random.nextInt(2)+0.5;
 		tiempoMinCambio= (long) (Framework.secEnNanosec*rng);
 		tiempoUltimoCambio=0;
-		r2D= new Rectangle(cordX, cordY, charizardFlyFrontImg.getWidth()/4, charizardFlyFrontImg.getHeight());
+		r2D= UpdateRec();
 	}
 	
 	
@@ -151,7 +151,6 @@ public class Charizard extends Enemigos {
 							velMovX=-1;
 						
 					}
-
 					else if(distX==0)
 					{
 						velMovX=0;
@@ -277,6 +276,37 @@ public class Charizard extends Enemigos {
         charizardFlameSpitFrontAnim.changeCoordinates(cordX, cordY);
         charizardFlameSpitBackAnim.changeCoordinates(cordX, cordY);
         r2D.setRect(cordX, cordY, charizardFlyFrontImg.getWidth()/4, charizardFlyFrontImg.getHeight());
+	}
+	private Rectangle2D UpdateRec()
+	{ Rectangle2D r = new Rectangle();
+		switch(Ia){
+		case ACERCANDOSE:
+			
+			r= new Rectangle(cordX, cordY, charizardFlyFrontImg.getWidth()/4, charizardFlyFrontImg.getHeight());
+			break;
+		case ATACANDO:
+			
+			r= new Rectangle(cordX, cordY, charizardFlameSpitBackImg.getWidth()/4, charizardFlameSpitBackImg.getHeight());
+			break;
+		
+		
+		default:
+			
+			r= new Rectangle(cordX, cordY, charizardFlyFrontImg.getWidth()/4, charizardFlyFrontImg.getHeight());
+			break;
+		
+		}
+		
+		return r;
+		
+	}
+	
+	public int getVida() {
+		return vida;
+	}
+
+	public void setVida(int vida) {
+		this.vida = vida;
 	}
 	public void switchDireccion(PlayerAlex player)
 	{

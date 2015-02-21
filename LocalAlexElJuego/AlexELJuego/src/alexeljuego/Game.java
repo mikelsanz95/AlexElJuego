@@ -3,7 +3,9 @@ package alexeljuego;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
@@ -11,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
+
+
 
 
 
@@ -246,6 +250,10 @@ public class Game{
 			{
 				enemigosList.get(i).tocaAcercarse();
 			}
+			else if(enemigosList.get(i).getVida()<=0)
+			{
+				enemigosList.remove(i);
+			}
 			else if (enemigosList.size()>2)
 			{
 			enemigosList.get(0).tocaAcercarse();
@@ -286,12 +294,28 @@ public class Game{
 			proyectilList.remove(i);
 			continue;
 			}
+		
 			
 			else
 			{
 			Proyectil p= proyectilList.get(i);
 			p.Update();
 			}
+			
+			Rectangle2D h2d = new Rectangle(proyectilList.get(i).cordX, proyectilList.get(i).cordY,proyectilList.get(i).getImagenWidth() ,proyectilList.get(i).getImagenHeigth() );
+			for(int j =0;j<enemigosList.size() ; j++)
+			{
+				if(enemigosList.get(j).getRec2D().intersects(h2d))
+				{
+					
+					enemigosList.get(j).setVida(enemigosList.get(j).getVida() - proyectilList.get(i).daño);
+					proyectilList.remove(i);
+					break;
+					
+					
+				}
+			}
+			
 			
 		}
 	} catch (Exception e) {
