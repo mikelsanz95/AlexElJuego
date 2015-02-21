@@ -280,19 +280,20 @@ public class Game{
 		for(int i=0; i< proyectilList.size();i++)
 		{
 		
+			
 			if(proyectilList.get(i).isItLeftScreen())
 			{
 			proyectilList.remove(i);
 			continue;
 			}
+			
 			else
 			{
 			Proyectil p= proyectilList.get(i);
 			p.Update();
+			}
 			
-			
-			
-		}	}
+		}
 	} catch (Exception e) {
 		// TODO: handle exception
 	}

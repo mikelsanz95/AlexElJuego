@@ -63,7 +63,7 @@ public class PlayerAlex {
    
    public long tiempoMinRecarga=Framework.secEnNanosec*5;
     
-    public  long tiempoEntreSlash=  Framework.secEnNanosec/2;
+    public  long tiempoEntreSlash=  Framework.secEnNanosec/4;
     public long tiempoEntreMagias=Framework.secEnNanosec/5;
     public  long tiempoEntreFlechas= Framework.secEnNanosec/2;
     

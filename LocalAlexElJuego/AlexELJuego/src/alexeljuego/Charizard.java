@@ -20,6 +20,7 @@ public class Charizard extends Enemigos {
 	private int velMovX;
 	private int velMovY;
 	
+	private int dañoAc;
 	private long tiempoMinCambio = Framework.secEnNanosec*5;
 	private long tiempoUltimoCambio;
 	
@@ -46,7 +47,8 @@ public class Charizard extends Enemigos {
 	private long tiempoDeRecarga= Framework.secEnNanosec*3;
 	private long tiempoUltimaRecarga=0;
 	
-	
+	private long tiempoInvuln = Framework.secEnNanosec /2;
+	private long tiempoLastDaño; 
 	private int numAtaque ;
 	private boolean atacando;
 	private boolean timeToStrike;
@@ -69,7 +71,7 @@ public class Charizard extends Enemigos {
 	private Animation charizardFlyBackAnim;
 	private Animation charizardAttBackAnim;
 	private Animation charizardFlameSpitBackAnim;
-	public enum IA{ ATACANDO, MOVIENDOSEALEATORIO, ACERCANDOSE}
+	public enum IA{ ATACANDO, MOVIENDOSEALEATORIO, ACERCANDOSE, DAÑADO}
 	public IA Ia;
 	
 	@SuppressWarnings("static-access")
@@ -178,13 +180,13 @@ public class Charizard extends Enemigos {
 			}
 			else if (distY==0)
 			{
+			
 				velMovY=0;
 				yDesc=false;
 			}				
 			if (!yDesc && !xDesc)
 			{
-			Ia= Ia.ATACANDO;
-			
+				Ia= Ia.ATACANDO;
 			}
 			break;
 		}
@@ -224,6 +226,24 @@ public class Charizard extends Enemigos {
 				
 			break;
 		}
+//		case DAÑADO:
+//			
+//			if(mirandoFrente)
+//			{
+//				velMovY=6;
+//				velMovX=-9;
+//			}
+//			else
+//			{
+//				velMovY=6;
+//				velMovX=9;
+//			}
+//			if(gameTime - tiempoLastDaño>= tiempoInvuln)
+//			{
+//				Ia=Ia.ACERCANDOSE;
+//			}
+//			break;
+		
 			
 		}
 		if(cordY>Framework.altoFrame-charizardFlyFrontImg.getHeight()-2)
@@ -273,9 +293,10 @@ public class Charizard extends Enemigos {
 	
 	public void ataca(long gameTime)
 	{  	
+		System.out.println("entra");
 		if(gameTime - tiempoUltimaRecarga >=tiempoDeRecarga && !atacando)
 		{	
-			
+			System.out.println("ataca");
 			tiempoUltimaRecarga=gameTime;
 			tiempoUltimoataque= gameTime;
 			atacando=true;
@@ -283,62 +304,20 @@ public class Charizard extends Enemigos {
 		}
 		else if(atacando && gameTime - tiempoUltimoataque>= tiempoEntreAtaques)
 		{
-			
+			System.out.println("crea");
 			timeToStrike=true;
 			tiempoUltimoataque=gameTime;
 		}
 		else if(atacando&& timeToStrike)
 		{
+			System.out.println("ha atacado");
 			timeToStrike=false;
 			atacando=false;
 			tiempoUltimaRecarga=gameTime;
 			Ia=Ia.ACERCANDOSE;
 		}
 		
-//		else if(timeToStrike)
-//		{
-//		atacando=false;
-//		tiempoUltimaRecarga=gameTime;
-//		timeToStrike=false;
-//		tiempoUltimoataque=gameTime;
-//		numAtaque=0;
-//		}
-//		else
-//		{
-//			Ia=Ia.ACERCANDOSE;
-//		}
-//		if(gameTime-tiempoUltimoataque>= tiempoEntreAtaques && atacando )
-//		{
-//		int j =random.nextInt(6);
-//		if(j==1)
-//		{
-//			numAtaque=1;
-//			timeToStrike=true;
-//			tiempoUltimoataque=gameTime;
-//			charizardFlameSpitFrontAnim.resetAnim();
-//			charizardFlameSpitBackAnim.resetAnim();
-//			Ia=Ia.ACERCANDOSE;
-//			
-//		}
-//		else if(j==2)
-//		{
-//			numAtaque=2;
-//			timeToStrike=true;
-//			tiempoUltimoataque=gameTime;
-//			charizardAttFrontAnim.resetAnim();
-//			charizardAttBackAnim.resetAnim();
-//			Ia=Ia.ACERCANDOSE;
-//		}
-//		
-//		
-//		}
-//		if(!atacando )
-//		{
-//			
-//			tiempoUltimaRecarga=gameTime;
-//			tiempoUltimoataque=gameTime;
-//			Ia=Ia.ACERCANDOSE;
-//		}
+
 		
 		
 	}
@@ -413,6 +392,11 @@ public class Charizard extends Enemigos {
 		}
 		}
 	}
+	public void UpdateHitbox()
+	{
+		r2D.setRect(cordX, cordY, charizardFlyFrontImg.getWidth()/4, charizardFlyFrontImg.getHeight());
+	}
+	
 	public int getCordX()
 	{
 		return cordX;
@@ -424,7 +408,7 @@ public class Charizard extends Enemigos {
 	
 	public void  tocaAcercarse()
 	{
-		if(Ia!=Ia.ATACANDO)
+		if(Ia!=Ia.ATACANDO) // && Ia!=Ia.DAÑADO
 		{
 		Ia=Ia.ACERCANDOSE;
 		}
@@ -445,11 +429,11 @@ public class Charizard extends Enemigos {
 		int r;
 		if(mirandoFrente)
 		{
-			r = cordX+20;
+			r = cordX+280;
 		}
 		else
 		{
-			r = cordX-200;
+			r = cordX-80;
 		}	
 		return r;
 	}
@@ -459,11 +443,11 @@ public class Charizard extends Enemigos {
 		int r;
 		if(mirandoFrente)
 		{
-			r = cordY+30;
+			r = cordY+80;
 		}
 		else
 		{
-			r = cordY+30;
+			r = cordY+80;
 		}	
 		return r;
 	}
