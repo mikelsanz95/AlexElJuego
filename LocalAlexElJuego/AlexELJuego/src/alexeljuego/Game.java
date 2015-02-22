@@ -100,6 +100,13 @@ public class Game{
 			}				
 			case STAGE1:
 			{
+				
+			URL charizardDañadoFront = this.getClass().getResource("resources/images/stage1/charizardDañadoBack.png");	
+			Charizard.charizardDañadoFront = ImageIO.read(charizardDañadoFront);
+			
+			URL charizardDañadoBack = this.getClass().getResource("resources/images/stage1/charizardDañadoFront.png");	
+			Charizard.charizardDañadoBack =ImageIO.read(charizardDañadoBack);
+			
 			
 			URL charizardMovFrontUrl  = this.getClass().getResource("resources/images/stage1/charizardFlyFront.png");	
 			Charizard.charizardFlyFrontImg= ImageIO.read(charizardMovFrontUrl);                                                 
@@ -123,6 +130,9 @@ public class Game{
 			
 			URL proyectilBackUrl  = this.getClass().getResource("resources/images/stage1/flameBack.png");		
 			Charizard.proyectilBack= ImageIO.read(proyectilBackUrl);
+			
+			URL barraVidaEnemUrl  = this.getClass().getResource("resources/images/barraVidaEnem.png");		
+			Enemigos.barraVidaEnem = ImageIO.read(barraVidaEnemUrl);
 			
 			break;
 			}
@@ -179,6 +189,7 @@ public class Game{
 		case STAGE1:
 		{
 			player.Update(gameTime);
+			consultaColisionDeEspada();
 			createProyectil(gameTime);
 			updateProyectil();
 			for(int i = 0;i< enemigosList.size();i++)
@@ -250,21 +261,41 @@ public class Game{
 			{
 				enemigosList.get(i).tocaAcercarse();
 			}
-			else if(enemigosList.get(i).getVida()<=0)
-			{
-				enemigosList.remove(i);
-			}
+			
 			else if (enemigosList.size()>2)
 			{
 			enemigosList.get(0).tocaAcercarse();
 			enemigosList.get(1).tocaAcercarse();
 			}
+			if(enemigosList.get(i).getVida()<=0)
+			{
+				enemigosList.remove(i);
+				continue;
+			}
+			
 			enemigosList.get(i).Update(gameTime, player);
+			
 			
 			
 		}	
 		
 	}
+	private void consultaColisionDeEspada()
+	{
+		for(int i =0;i<enemigosList.size();i++)
+		{
+			
+		if(player.isAtacando && player.isEspadaUp  && enemigosList.get(i).isPuedeSeDañado())
+		{
+			if(enemigosList.get(i).getRec2D().intersects(player.rec))
+			{
+				enemigosList.get(i).setVida(enemigosList.get(i).getVida() - player.daño);
+			}
+			
+		}
+		}
+	}
+	
 	private void createCharizard(long gameTime) 
 	{	if(enemigosList.size()<1)
 		if(gameTime - tiempoSpawnCharizard >= Framework.secEnNanosec )
@@ -307,9 +338,11 @@ public class Game{
 			{
 				if(enemigosList.get(j).getRec2D().intersects(h2d))
 				{
-					
+					if(enemigosList.get(j).isPuedeSeDañado())
+					{
 					enemigosList.get(j).setVida(enemigosList.get(j).getVida() - proyectilList.get(i).daño);
 					proyectilList.remove(i);
+					}
 					break;
 					
 					
@@ -396,11 +429,12 @@ public class Game{
 		else
 		player.Draw(g2d, gameTime);
 		for(int i=0;i<proyecEnemList.size()  ; i++ )
-		{
-			
+		{			
 			proyecEnemList.get(i).Draw(g2d);
 			
 		}
+		
+		
 	}
 	
 

@@ -61,4 +61,8 @@ public class ArcoFlechas {
 	{
 		return velMovX[numFlecha];
 	}
+	public int dañoFlechas(int numFlecha)
+	{
+		return daño[numFlecha];
+	}
 }

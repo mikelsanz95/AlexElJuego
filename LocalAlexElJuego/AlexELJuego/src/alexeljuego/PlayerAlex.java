@@ -1,8 +1,10 @@
 package alexeljuego;
 
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ArrayList;
@@ -81,7 +83,8 @@ public class PlayerAlex {
     
     private int puntosMagicosInit= 100;
     private int puntosMagicos;
-    public int numSpell;
+    
+    
     
     private int puntosStaminaInit= 100;
     private int puntosStamina;    
@@ -95,6 +98,8 @@ public class PlayerAlex {
     public boolean isRecargando;
     public boolean isAtacando;
     public int numAtaque;
+    public int numSpell;
+    public int numFlecha;
     public boolean tocaDisparar;
     //Imagenes y animaciones del del jugador estatico-sin atacar, y moviendo-sin tacar
     
@@ -138,30 +143,12 @@ public class PlayerAlex {
   //Imagenes y animaciones del del jugador atacando. 
     
     
-    private BufferedImage frontSlashFrontImg;
-    private BufferedImage frontSlashBackImg;
-    private BufferedImage downSlashFrontImg;
-    private BufferedImage downSlashBackImg;
-    private BufferedImage upSlashFrontImg;
-    private BufferedImage upSlashBackImg;
-    
-    private BufferedImage omniSlashFrontImg;
-    private BufferedImage omniSlashBackImg;
+ 
 
     private BufferedImage playerArcoAttFrontAnimImg;
     private BufferedImage playerArcoAttBackAnimImg;
-//
-    private Animation playerFrontSlashFrontAnim;
-    private Animation playerFrontSlashBackAnim;
-    
-    private Animation playerUpSlashFrontAnim;
-    private Animation playerUpSlashBackAnim;
-    
-    private Animation playerDownSlashFrontAnim;
-    private Animation playerDownSlashBackAnim;
-    
-    private Animation playerOmniSlashFrontAnim;
-    private Animation playerOmniSlashBackAnim;
+
+   
     
     
     
@@ -179,6 +166,10 @@ public class PlayerAlex {
     public int offsetFlechaY;
     public int offsetMagiaX;
     public int offsetMagiaY;
+    
+    // hitbox
+    
+    public Rectangle2D rec;
    
     public PlayerAlex(int xCoordinate, int yCoordinate)
     {
@@ -205,11 +196,13 @@ public class PlayerAlex {
 	    this.frenadoX = 0.5;
 	    this.frenadoY = 0.5;
 	    this.numSpell=0;
+	    this.numFlecha=0;
 	    // offsets etc 
 	    this.offsetFlechaX= 0;
 	    this.offsetMagiaX=100;
 	    this.offsetFlechaY=0;
 	    this.offsetMagiaY=20;
+	    this.daño=30;
 	    this.isEspadaUp=true;
 	    this.health=healthInit;
 	    this.mirandoFrente=true;
@@ -224,10 +217,14 @@ public class PlayerAlex {
 	    slash.Inicializar(cordX, cordY);	    
 	    magiasTotal= new Magias(cordX+ offsetMagiaX, cordY + offsetMagiaY);
 	    carcaj= new ArcoFlechas();
+	    
+	    
 	}
 
 	public void Update(long gameTime)	
 	{		
+		cambiaAtaque();
+		UpdateHitbox();
 		if(!isAtacando)
 		{
 		switchDireccion();	
@@ -320,7 +317,36 @@ public class PlayerAlex {
         }
                                  
         slash.Update(numAtaque, cordX, cordY);
+        UpdateHitbox();
 	}
+	private void UpdateHitbox() 
+	{
+		
+		if(isEspadaUp)
+		{
+			rec= new Rectangle(cordX, cordY, playerNotMovingEspadaFrontImg.getWidth(), playerNotMovingEspadaFrontImg.getHeight());;
+			if(isAtacando)
+			{
+				
+				
+				rec = slash.espadazoHitbox(cordX, cordY, numAtaque);
+				
+			}
+		}
+		else if(isBaculoUp)
+		{
+			
+			
+			rec=  new Rectangle(cordX, cordY, playerNotMovingBaculoFrontImg.getWidth(), playerNotMovingBaculoFrontImg.getHeight());
+		}
+		else if(isArcoUp)
+		{
+		 
+			rec= new Rectangle(cordX, cordY, playerNotMovingArcoFrontImg.getWidth(), playerNotMovingEspadaFrontImg.getHeight());
+		}
+		
+	}
+
 	private void LoadContent() 
 	
 	{
@@ -410,6 +436,9 @@ public class PlayerAlex {
 		// arco
 		playerArcoAttFrontAnim = new Animation(playerArcoAttFrontAnimImg, 1360/9, 177, 9, 55, false, cordX , cordY , 0);
 		playerArcoAttBackAnim = new Animation(playerArcoAttBackAnimImg, 1360/9, 177, 9, 55, false, cordX , cordY , 0);
+		
+		// hitbox
+		rec= new Rectangle(cordX, cordY, playerNotMovingEspadaFrontImg.getWidth(), playerNotMovingEspadaFrontImg.getHeight());
 	}
 	private void switchDireccion()
 	{
@@ -527,6 +556,7 @@ public class PlayerAlex {
 	}
 	public void isAtacandoEspada(long gameTime)
 	{
+		if(puntosStamina>=10)
 		if(isAtacando)
 		{	
 //			if(gameTime- tiempoUltimoSlash >= tiempoEntreSlash+Framework.secEnNanosec*0.5)
@@ -540,6 +570,7 @@ public class PlayerAlex {
 					if(numAtaque==0)
 					{
 						puntosStamina-=10;
+						
 					}
 					else if(numAtaque==1)
 					{
@@ -559,7 +590,7 @@ public class PlayerAlex {
 					    	numAtaque=0;
 				    }
 					isAtacando=false;
-					
+					slash.resetAnims();
 			}
 		}
 		else
@@ -583,7 +614,19 @@ public class PlayerAlex {
 		return isBaculoUp;
 	}
 
-
+	private void cambiaAtaque()
+	{
+		if(isArcoUp)
+		{
+			daño= carcaj.dañoFlechas(numFlecha);
+		}
+		else if(isBaculoUp)
+		{
+			daño= magiasTotal.getDañoSpell(numSpell);
+		}
+		
+		
+	}
 
 	public void isMoving()
 	 {

@@ -105,6 +105,11 @@ public class Magias {
 		
 	
 	}
+	public int getDañoSpell( int numSpell)
+	{
+		return dañoMagico[numSpell];
+	}
+	
 	public int getCosteSpell(int numSpell)
 	{
 		return costoMana[numSpell];

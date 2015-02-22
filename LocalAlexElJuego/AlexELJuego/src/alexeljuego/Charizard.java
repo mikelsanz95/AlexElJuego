@@ -23,6 +23,7 @@ public class Charizard extends Enemigos {
 	private int dañoAc;
 	private long tiempoMinCambio = Framework.secEnNanosec*5;
 	private long tiempoUltimoCambio;
+	private int ultimaVida;
 	
 	
 	private boolean cambio;
@@ -36,6 +37,7 @@ public class Charizard extends Enemigos {
 	private int dañoZarpa;
 	private Random random;
 	private int rangoDeTaunt;
+	private boolean puedeSeDañado;
 	
 	
 	private boolean xDesc;
@@ -44,10 +46,10 @@ public class Charizard extends Enemigos {
 	private long tiempoEntreAtaques = Framework.secEnNanosec /2;
 	private long tiempoUltimoataque;
 	
-	private long tiempoDeRecarga= Framework.secEnNanosec*3;
+	private long tiempoDeRecarga= Framework.secEnNanosec;
 	private long tiempoUltimaRecarga=0;
 	
-	private long tiempoInvuln = Framework.secEnNanosec /2;
+	private long tiempoInvuln = Framework.secEnNanosec /5;
 	private long tiempoLastDaño; 
 	private int numAtaque ;
 	private boolean atacando;
@@ -62,15 +64,28 @@ public class Charizard extends Enemigos {
 	public static BufferedImage charizardFlyBackImg;
 	public static BufferedImage charizardAttBackImg;
 	public static BufferedImage charizardFlameSpitBackImg;
+	public static BufferedImage charizardDañadoFront;
+	public static BufferedImage charizardDañadoBack;
+	
+	
 	public static BufferedImage proyectilFront;
 	public static BufferedImage proyectilBack;
 	
+	
+	
 	private Animation charizardFlyFrontAnim;
 	private Animation charizardAttFrontAnim;
+	
 	private Animation charizardFlameSpitFrontAnim;
 	private Animation charizardFlyBackAnim;
+	
 	private Animation charizardAttBackAnim;
 	private Animation charizardFlameSpitBackAnim;
+	
+	private Animation charizardDañadoFrontAnim;
+	private Animation charizardDañadoBackAnim;
+	
+	
 	public enum IA{ ATACANDO, MOVIENDOSEALEATORIO, ACERCANDOSE, DAÑADO}
 	public IA Ia;
 	
@@ -80,6 +95,8 @@ public class Charizard extends Enemigos {
 		this.vida=200;
 		this.cordX = cordX;
 		this.cordY = cordY;
+		ultimaVida = vida;
+		
 		velMovX = 0;
 		velMovY = 0;
 		this.daño=20;
@@ -94,6 +111,9 @@ public class Charizard extends Enemigos {
 		this.charizardFlameSpitFrontAnim= new Animation(charizardFlameSpitFrontImg,1268/4 , 209, 4, 100, false, cordX, cordY, 0);
 		this.charizardFlyFrontAnim = new Animation(charizardFlyFrontImg, 1248/4, 193, 4, 100, false, cordX, cordY, 0);
 		this.charizardFlyBackAnim= new Animation(charizardFlyBackImg, 1248/4 , 193, 4, 100, false, cordX, cordY, 0);
+		this.charizardDañadoFrontAnim= new Animation(charizardDañadoFront,1268/4 , 209, 4, 50, false, cordX, cordY, 0);
+		this.charizardDañadoBackAnim= new Animation(charizardDañadoBack, 1268/4, 209, 4, 50, false, cordX, cordY, 0);
+		
 		cambio=true;
 		xDesc=true;
 		numAtaque=1;
@@ -102,6 +122,7 @@ public class Charizard extends Enemigos {
 		tiempoMinCambio= (long) (Framework.secEnNanosec*rng);
 		tiempoUltimoCambio=0;
 		r2D= UpdateRec();
+		puedeSeDañado=true;
 	}
 	
 	
@@ -111,6 +132,15 @@ public class Charizard extends Enemigos {
 		
 		switchDireccion(player);		
 		
+		if(ultimaVida!=vida)
+		{
+			ultimaVida=vida;
+			tiempoLastDaño=gameTime;
+			
+			puedeSeDañado=false;
+			Ia=Ia.DAÑADO;
+		}
+			
 		switch (Ia) 
 		{
 		case ACERCANDOSE:
@@ -225,23 +255,25 @@ public class Charizard extends Enemigos {
 				
 			break;
 		}
-//		case DAÑADO:
-//			
-//			if(mirandoFrente)
-//			{
-//				velMovY=6;
-//				velMovX=-9;
-//			}
-//			else
-//			{
-//				velMovY=6;
-//				velMovX=9;
-//			}
-//			if(gameTime - tiempoLastDaño>= tiempoInvuln)
-//			{
-//				Ia=Ia.ACERCANDOSE;
-//			}
-//			break;
+		case DAÑADO:
+			
+			if(mirandoFrente)
+			{
+				velMovY=6;
+				velMovX=-9;
+			}
+			else
+			{
+				velMovY=6;
+				velMovX=9;
+			}
+			if(gameTime - tiempoLastDaño >= tiempoInvuln)
+			{
+				
+				Ia=Ia.ACERCANDOSE;
+				puedeSeDañado=true;
+			}
+			break;
 		
 			
 		}
@@ -275,6 +307,9 @@ public class Charizard extends Enemigos {
         charizardAttBackAnim.changeCoordinates(cordX, cordY);
         charizardFlameSpitFrontAnim.changeCoordinates(cordX, cordY);
         charizardFlameSpitBackAnim.changeCoordinates(cordX, cordY);
+        charizardDañadoFrontAnim.changeCoordinates(cordX, cordY);
+        charizardDañadoBackAnim.changeCoordinates(cordX, cordY);
+        
         r2D.setRect(cordX, cordY, charizardFlyFrontImg.getWidth()/4, charizardFlyFrontImg.getHeight());
 	}
 	private Rectangle2D UpdateRec()
@@ -304,7 +339,9 @@ public class Charizard extends Enemigos {
 	public int getVida() {
 		return vida;
 	}
-
+	public boolean isPuedeSeDañado() {
+		return puedeSeDañado;
+	}
 	public void setVida(int vida) {
 		this.vida = vida;
 	}
@@ -323,10 +360,10 @@ public class Charizard extends Enemigos {
 	
 	public void ataca(long gameTime)
 	{  	
-		System.out.println("entra");
+	
 		if(gameTime - tiempoUltimaRecarga >=tiempoDeRecarga && !atacando)
 		{	
-			System.out.println("ataca");
+			
 			tiempoUltimaRecarga=gameTime;
 			tiempoUltimoataque= gameTime;
 			atacando=true;
@@ -334,13 +371,13 @@ public class Charizard extends Enemigos {
 		}
 		else if(atacando && gameTime - tiempoUltimoataque>= tiempoEntreAtaques)
 		{
-			System.out.println("crea");
+			
 			timeToStrike=true;
 			tiempoUltimoataque=gameTime;
 		}
 		else if(atacando&& timeToStrike)
 		{
-			System.out.println("ha atacado");
+			
 			timeToStrike=false;
 			atacando=false;
 			tiempoUltimaRecarga=gameTime;
@@ -353,6 +390,10 @@ public class Charizard extends Enemigos {
 	}
 	public void Draw(Graphics2D g2d)
 	{
+		for(int i=0 ;i<vida;i++)
+		{
+		g2d.drawImage(Enemigos.barraVidaEnem, cordX+i, cordY-80, null);
+		}
 		switch(Ia)
 		{
 		case ATACANDO:
@@ -420,6 +461,20 @@ public class Charizard extends Enemigos {
 		
 		
 		}
+		case DAÑADO:
+			
+			
+			if(mirandoFrente)
+			{
+				charizardDañadoFrontAnim.Draw(g2d);
+			}
+			else
+			{
+				charizardDañadoBackAnim.Draw(g2d);
+			}
+		break;
+			
+		
 		}
 	}
 	public void UpdateHitbox()
@@ -438,9 +493,14 @@ public class Charizard extends Enemigos {
 	
 	public void  tocaAcercarse()
 	{
-		if(Ia!=Ia.ATACANDO) // && Ia!=Ia.DAÑADO
+		if(Ia==Ia.ATACANDO || Ia==Ia.DAÑADO) // && Ia!=Ia.DAÑADO
 		{
-		Ia=Ia.ACERCANDOSE;
+		
+		}
+		else
+		{
+			Ia=Ia.ACERCANDOSE;			
+
 		}
 		
 	}

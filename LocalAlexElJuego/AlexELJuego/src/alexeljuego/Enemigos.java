@@ -10,7 +10,16 @@ public abstract class Enemigos
 	private int cordX;
 	private int cordY;
 	private int vida;
+	public static BufferedImage barraVidaEnem;
 	
+	private boolean puedeSeDañado;
+	
+	public boolean isPuedeSeDañado() {
+		return puedeSeDañado;
+	}
+
+	
+
 	public int getVida() {
 		return vida;
 	}

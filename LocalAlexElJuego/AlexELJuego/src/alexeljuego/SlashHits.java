@@ -1,6 +1,7 @@
 package alexeljuego;
 
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
@@ -28,7 +29,7 @@ public class SlashHits {
 
     private BufferedImage playerArcoAttFrontAnimImg;
     private BufferedImage playerArcoAttBackAnimImg;
-//
+
     private Animation playerFrontSlashFrontAnim;
     private Animation playerFrontSlashBackAnim;
     
@@ -83,17 +84,17 @@ public class SlashHits {
 		}
 		
     	
-    	playerFrontSlashFrontAnim = new Animation(frontSlashFrontImg, 1266/6, 158, 6, 90, false, cordX,cordY, 0);
-		playerFrontSlashBackAnim = new Animation(frontSlashBackImg, 1266/6, 158, 6, 90, false, cordX, cordY, 0);
+    	playerFrontSlashFrontAnim = new Animation(frontSlashFrontImg, 1266/6, 158, 6, 45, false, cordX,cordY, 0);
+		playerFrontSlashBackAnim = new Animation(frontSlashBackImg, 1266/6, 158, 6, 45, false, cordX, cordY, 0);
 		
-		playerDownSlashBackAnim = new Animation(downSlashBackImg, 965/5, 158, 5, 110 , false, cordX, cordY, 0);
-		playerDownSlashFrontAnim = new Animation(downSlashFrontImg, 965/5, 158, 5, 110 , false, cordX, cordY, 0);
+		playerDownSlashBackAnim = new Animation(downSlashBackImg, 965/5, 158, 5, 55 , false, cordX, cordY, 0);
+		playerDownSlashFrontAnim = new Animation(downSlashFrontImg, 965/5, 158, 5, 55 , false, cordX, cordY, 0);
 		
-		playerUpSlashBackAnim= new Animation(upSlashBackImg, 965/5, 158, 5, 110 , false, cordX,cordY, 0);
-		playerUpSlashFrontAnim = new Animation(upSlashFrontImg, 965/5, 158,5, 110 , false, cordX,cordY, 0);
+		playerUpSlashBackAnim= new Animation(upSlashBackImg, 965/5, 158, 5, 55 , false, cordX,cordY, 0);
+		playerUpSlashFrontAnim = new Animation(upSlashFrontImg, 965/5, 158,5, 55 , false, cordX,cordY, 0);
 		
-		playerOmniSlashBackAnim = new Animation(omniSlashBackImg, 1940/5, 158, 5, 110, false, cordX, cordY, 0);
-		playerOmniSlashFrontAnim = new Animation(omniSlashFrontImg, 1940/5, 158, 5, 110, false, cordX, cordY, 0);
+		playerOmniSlashBackAnim = new Animation(omniSlashBackImg, 1940/5, 158, 5, 55, false, cordX, cordY, 0);
+		playerOmniSlashFrontAnim = new Animation(omniSlashFrontImg, 1940/5, 158, 5, 55, false, cordX, cordY, 0);
     }
     public void Update(int numAtaque, int cordX, int cordY)
     {    	
@@ -163,6 +164,51 @@ public class SlashHits {
     	break;
     	}
     }
-    
+    public void resetAnims()
+    {
+
+        playerFrontSlashFrontAnim.resetAnim();
+        playerFrontSlashBackAnim.resetAnim();
+                                 
+        playerDownSlashBackAnim.resetAnim();
+        playerDownSlashFrontAnim.resetAnim();
+                                 
+        playerUpSlashBackAnim.resetAnim();
+        playerUpSlashFrontAnim.resetAnim();
+                                 
+        playerOmniSlashBackAnim.resetAnim();
+        playerOmniSlashFrontAnim.resetAnim();
+    }
+    public Rectangle espadazoHitbox(int cordX, int cordY,int numAtaque)
+    {
+    	int lengthX = 0;
+    	int lengthY = 0;
+    	
+    	switch(numAtaque)
+    	{
+    	case 0:
+    	lengthX= frontSlashBackImg.getWidth()/6;
+    	lengthY=frontSlashBackImg.getHeight();
+    	
+    	
+    	break;    		
+    	case 1:
+    	lengthX= upSlashBackImg.getWidth()/5;
+        lengthY= upSlashBackImg.getHeight();
+    	break;
+    		
+    	case 2:
+		lengthX= downSlashBackImg.getWidth()/5;
+        lengthY= downSlashBackImg.getHeight();
+    	break;
+    	case 3:
+		lengthX= downSlashBackImg.getWidth()/5;
+        lengthY= downSlashBackImg.getHeight();
+    		
+    	break;
+    	
+    	}
+    	return new Rectangle(cordX,cordY,lengthX ,lengthY);
+    }
     
 }
