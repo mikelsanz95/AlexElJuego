@@ -5,14 +5,14 @@ import java.awt.image.BufferedImage;
 
 public class ProyectilEnem {
 	
-	private  BufferedImage proyectilImg;
+	public  BufferedImage proyectilImg;
 	private  Animation proyectilAnim;
 	
 	
-	private int daño;
+	public int daño;
 	public int cordX;
-	private int cordY;
-	
+	public int cordY;
+	public int numFrames;
 	private int velMovX;	
 	private boolean direccion;
 	
@@ -59,7 +59,7 @@ public class ProyectilEnem {
 		this.daño = daño;
 		this.direccion=direccion;		
 		this.proyectilImg= proyectilImg;
-		
+		this.numFrames=numFrames;
 		this.proyectilAnim=new Animation(proyectilImg, proyectilImg.getWidth()/numFrames, proyectilImg.getHeight(), numFrames, 60, true, cordX, cordY, 0);
 		
 		this.velMovX=velMovX;

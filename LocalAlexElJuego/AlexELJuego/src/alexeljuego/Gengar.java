@@ -1,42 +1,35 @@
 package alexeljuego;
 
+import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URL;
 import java.util.Random;
 
-import javax.imageio.ImageIO;
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MoveAction;
 
-public class Charizard extends Enemigos {
-	
+
+public class Gengar extends Enemigos 
+{
 	private int cordX;
 	private int cordY;
-	
+
 	private int velMovX;
 	private int velMovY;
 	
-	
 	private long tiempoMinCambio = Framework.secEnNanosec*5;
 	private long tiempoUltimoCambio;
-	private int ultimaVida;
+
 	
+	private int ultimaVida;
 	
 	private boolean cambio;
 	
 	private int vida;
-	
-	private Rectangle2D r2D;
-	
+
 	private int daño;	
 	private Random random;
 	private boolean puedeSeDañado;
-	
-	
 	private boolean xDesc;
 	private boolean yDesc;
 	
@@ -52,42 +45,53 @@ public class Charizard extends Enemigos {
 	private int numAtaque ;
 	private boolean atacando;
 	private boolean timeToStrike;
-	
+	private boolean fadeCreado;
 	
 	private boolean mirandoFrente;	
-	               
-	public static BufferedImage charizardFlyFrontImg;
-	public static BufferedImage charizardAttFrontImg;
-	public static BufferedImage charizardFlameSpitFrontImg;
-	public static BufferedImage charizardFlyBackImg;
-	public static BufferedImage charizardAttBackImg;
-	public static BufferedImage charizardFlameSpitBackImg;
-	public static BufferedImage charizardDañadoFront;
-	public static BufferedImage charizardDañadoBack;
+	
+	//Imagenes gengar
+	
+	public static BufferedImage gengarFlyFrontImg;
+	public static BufferedImage gengarAttFrontImg;
+	
+	public static BufferedImage gengarFlyBackImg;
+	public static BufferedImage gengarAttBackImg;
+	
+	public static BufferedImage gengarDañadoFront;
+	public static BufferedImage gengarDañadoBack;
+	
+	public static BufferedImage gengarFade;
 	
 	
 	public static BufferedImage proyectilFront;
 	public static BufferedImage proyectilBack;
 	
+	// Animaciones
+	
+	private Animation gengarFlyFrontAnim;
+	private Animation gengarAttFrontAnim;
+	private Animation gengarFlyBackAnim;
+	private Animation gengarAttBackAnim;
+	private Animation gengarDañadoFrontAnim;
+	private Animation gengarDañadoBackAnim;
+	
+	private Rectangle2D r2D;
+	
+	//Desaparicion 
 	
 	
-	private Animation charizardFlyFrontAnim;
-	private Animation charizardAttFrontAnim;
+	// tiempo que sera visible?
+    public long fadeTiempoVida;
+    
+    // para el calculo de la vida del trail.
+    public long inicioDelFade;
 	
-	private Animation charizardFlameSpitFrontAnim;
-	private Animation charizardFlyBackAnim;
-	
-	private Animation charizardAttBackAnim;
-	private Animation charizardFlameSpitBackAnim;
-	
-	private Animation charizardDañadoFrontAnim;
-	private Animation charizardDañadoBackAnim;
-	
-	
-	public enum IA{ ATACANDO, MOVIENDOSEALEATORIO, ACERCANDOSE, DAÑADO}
+ // El huno va desapareciendo 
+    public float transparenciaDeImagen;
+    
+    
+	public enum IA{ ATACANDO, MOVIENDOSEALEATORIO, ACERCANDOSE, DAÑADO , TP}
 	public IA Ia;
-	
-	@SuppressWarnings("static-access")
 	public void Inicializar(int cordX , int cordY)
 	{
 		this.vida=200;
@@ -97,19 +101,23 @@ public class Charizard extends Enemigos {
 		
 		velMovX = 0;
 		velMovY = 0;
-		this.daño=20;
+		this.daño=5;
 		
 		random= new Random();
 		Ia = Ia.MOVIENDOSEALEATORIO;
-		this.charizardAttBackAnim = new Animation(charizardAttBackImg, 1445/5 , 207, 5, 100, false, cordX,cordY, 0);
-		this.charizardAttFrontAnim= new Animation(charizardAttFrontImg,1445/5 , 207, 5, 100, false, cordX, cordY, 0);
-		this.charizardFlameSpitBackAnim= new Animation(charizardFlameSpitBackImg, 1268/4, 209, 4, 100, false, cordX,cordY, 0);
-		this.charizardFlameSpitFrontAnim= new Animation(charizardFlameSpitFrontImg,1268/4 , 209, 4, 100, false, cordX, cordY, 0);
-		this.charizardFlyFrontAnim = new Animation(charizardFlyFrontImg, 1248/4, 193, 4, 100, false, cordX, cordY, 0);
-		this.charizardFlyBackAnim= new Animation(charizardFlyBackImg, 1248/4 , 193, 4, 100, false, cordX, cordY, 0);
-		this.charizardDañadoFrontAnim= new Animation(charizardDañadoFront,1268/4 , 209, 4, 50, false, cordX, cordY, 0);
-		this.charizardDañadoBackAnim= new Animation(charizardDañadoBack, 1268/4, 209, 4, 50, false, cordX, cordY, 0);
+		this.gengarAttBackAnim = new Animation(gengarAttBackImg, 764/4, 202, 4, 200, false, cordX,cordY, 0);
+		this.gengarAttFrontAnim= new Animation(gengarAttFrontImg,764/4 , 202, 4, 200, false, cordX, cordY, 0);
 		
+		this.gengarFlyFrontAnim = new Animation(gengarFlyFrontImg, 279/2, 184, 2, 300, false, cordX, cordY, 0);
+		this.gengarFlyBackAnim= new Animation(gengarFlyBackImg, 279/2 , 184, 2, 300, false, cordX, cordY, 0);
+		this.gengarDañadoFrontAnim= new Animation(gengarDañadoFront,490/2 , 186,2, 100, false, cordX, cordY, 0);
+		this.gengarDañadoBackAnim= new Animation(gengarDañadoBack, 490/2, 186, 2, 100, false, cordX, cordY, 0);
+		 
+        this.fadeTiempoVida = Framework.secEnNanosec;                
+        this.transparenciaDeImagen = 1.0f;
+        
+        fadeCreado=false;
+        
 		cambio=true;
 		xDesc=true;
 		numAtaque=1;
@@ -120,8 +128,6 @@ public class Charizard extends Enemigos {
 		r2D= UpdateRec();
 		puedeSeDañado=true;
 	}
-	
-	
 	public void Update(long gameTime,PlayerAlex player)
 	{	
 		
@@ -148,7 +154,7 @@ public class Charizard extends Enemigos {
 			{
 				if(xDesc)
 				{
-					distX=cordX-player.cordX+charizardFlyFrontImg.getWidth()/4+200;
+					distX=cordX-player.cordX+gengarFlyFrontImg.getWidth()/4+200;
 					if (distX<0)
 					{
 						velMovX=+6;
@@ -221,7 +227,16 @@ public class Charizard extends Enemigos {
 			velMovY=0;
 			xDesc = true;
 			yDesc = true;
-			ataca(gameTime);
+			int i = random.nextInt(2)+1;
+			if(i==1 && !atacando)
+			{
+				Ia=Ia.TP;
+			}
+			else
+			{
+				ataca(gameTime);
+			}			
+			
 			break;
 		}
 		case MOVIENDOSEALEATORIO :
@@ -270,60 +285,101 @@ public class Charizard extends Enemigos {
 				puedeSeDañado=true;
 			}
 			break;
+		case TP:
+			
+			
+			if(!fadeCreado)	
+			{
+			
+			inicioDelFade=gameTime;
+			fadeCreado=true;
+			}
+			puedeSeDañado=false;
+			velMovX=0;
+			velMovY=0;
+			
+			long tiempoVidaActual = gameTime - inicioDelFade;	        
+	        int TVactualPorcentaje = (int)(tiempoVidaActual * 100 / fadeTiempoVida);
+	        TVactualPorcentaje = 100 - TVactualPorcentaje;
+	        float lTrailTransparencia = 1.0f * (TVactualPorcentaje * 0.01f);
+
+	        if(lTrailTransparencia > 0 )
+	            transparenciaDeImagen = lTrailTransparencia;
+			if(didTrailDisappear(gameTime))
+			{
+				
+				puedeSeDañado=false;
+				fadeTiempoVida = Framework.secEnNanosec;                
+			    transparenciaDeImagen = 1.0f;
+			    fadeCreado=false;
+			    puedeSeDañado=true;
+			    if(mirandoFrente)
+			    {
+			    	cordX=+800;
+			    }
+			    else
+			    {
+			    	cordX=-800;
+			    }
+			    Ia=Ia.ACERCANDOSE;
+			}
+			
+			
+			break;
+	
 		
 			
 		}
-		if(cordY>Framework.altoFrame-charizardFlyFrontImg.getHeight()-2)
+		if(cordY>Framework.altoFrame-gengarFlyFrontImg.getHeight()-2)
     	{
-	    	cordY=Framework.altoFrame-charizardFlyFrontImg.getHeight()-2;
+	    	cordY=Framework.altoFrame-gengarFlyFrontImg.getHeight()-2;
 	    	velMovY=0;
     	}
         else if(cordY<Framework.altoFrame/3+1)
         {
         	cordY=Framework.altoFrame/3+1;
         	velMovY=0;
-        }
-        
+        	
+        }        
         if(cordX<0)
         {
         	cordX=0;
         	velMovX=0;
         }
-        else if(cordX>Framework.anchoFrame-charizardFlyFrontImg.getWidth()/4)
+        else if(cordX>Framework.anchoFrame-gengarFlyFrontImg.getWidth()/4)
         {
-        	cordX=Framework.anchoFrame-charizardFlyFrontImg.getWidth()/4;
+        	cordX=Framework.anchoFrame-gengarFlyFrontImg.getWidth()/4;
         	velMovX=0;
         }	
         cordX+=velMovX;
         cordY+=velMovY;
        
-        charizardFlyFrontAnim.changeCoordinates(cordX, cordY);
-        charizardFlyBackAnim.changeCoordinates(cordX, cordY);
-        charizardAttFrontAnim.changeCoordinates(cordX, cordY);
-        charizardAttBackAnim.changeCoordinates(cordX, cordY);
-        charizardFlameSpitFrontAnim.changeCoordinates(cordX, cordY);
-        charizardFlameSpitBackAnim.changeCoordinates(cordX, cordY);
-        charizardDañadoFrontAnim.changeCoordinates(cordX, cordY);
-        charizardDañadoBackAnim.changeCoordinates(cordX, cordY);
+        gengarFlyFrontAnim.changeCoordinates(cordX, cordY);
+        gengarFlyBackAnim.changeCoordinates(cordX, cordY);
+        gengarAttFrontAnim.changeCoordinates(cordX, cordY);
+        gengarAttBackAnim.changeCoordinates(cordX, cordY);
         
-        r2D.setRect(cordX, cordY, charizardFlyFrontImg.getWidth()/4, charizardFlyFrontImg.getHeight());
+        gengarDañadoFrontAnim.changeCoordinates(cordX, cordY);
+        gengarDañadoBackAnim.changeCoordinates(cordX, cordY);
+        
+        r2D.setRect(cordX, cordY, gengarFlyFrontImg.getWidth()/4, gengarFlyFrontImg.getHeight());
 	}
 	private Rectangle2D UpdateRec()
 	{ Rectangle2D r = new Rectangle();
 		switch(Ia){
 		case ACERCANDOSE:
 			
-			r= new Rectangle(cordX, cordY, charizardFlyFrontImg.getWidth()/4, charizardFlyFrontImg.getHeight());
+			r= new Rectangle(cordX, cordY, gengarFlyFrontImg.getWidth()/4, gengarFlyFrontImg.getHeight());
 			break;
 		case ATACANDO:
 			
-			r= new Rectangle(cordX, cordY, charizardFlameSpitBackImg.getWidth()/4, charizardFlameSpitBackImg.getHeight());
+			r= new Rectangle(cordX, cordY, gengarAttBackImg.getWidth()/4, gengarAttFrontImg.getHeight());
 			break;
 		
 		
 		default:
 			
-			r= new Rectangle(cordX, cordY, charizardFlyFrontImg.getWidth()/4, charizardFlyFrontImg.getHeight());
+			r= new Rectangle(cordX, cordY, gengarFlyFrontImg.getWidth()/4, gengarFlyFrontImg.getHeight());
 			break;
 		
 		}
@@ -331,7 +387,16 @@ public class Charizard extends Enemigos {
 		return r;
 		
 	}
-	
+    public boolean didTrailDisappear(long gameTime)
+    {
+        long tiempoVidaActual = gameTime - inicioDelFade;
+        
+        if(tiempoVidaActual >= fadeTiempoVida)
+            return true;
+        else
+            return false;
+    }
+    
 	public int getVida() {
 		return vida;
 	}
@@ -348,7 +413,7 @@ public class Charizard extends Enemigos {
 			
 			mirandoFrente=true;
 		}
-		else if( player.cordX< cordX + charizardAttFrontImg.getWidth()/4)
+		else if( player.cordX< cordX + gengarAttFrontImg.getWidth()/4)
 		{
 			mirandoFrente=false;
 		}
@@ -378,6 +443,7 @@ public class Charizard extends Enemigos {
 			atacando=false;
 			tiempoUltimaRecarga=gameTime;
 			Ia=Ia.ACERCANDOSE;
+			
 		}
 		
 
@@ -394,27 +460,15 @@ public class Charizard extends Enemigos {
 		{
 		case ATACANDO:
 		{
-			if(numAtaque==1 && atacando==true)
+			if (numAtaque==1 && atacando==true)
 			{
 				if(mirandoFrente)
 				{
-					charizardFlameSpitFrontAnim.Draw(g2d);
+					gengarAttFrontAnim.Draw(g2d);
 				}
 				else
 				{
-					charizardFlameSpitBackAnim.Draw(g2d);
-				}
-				
-			}
-			else if (numAtaque==2 && atacando==true)
-			{
-				if(mirandoFrente)
-				{
-					charizardAttFrontAnim.Draw(g2d);
-				}
-				else
-				{
-					charizardAttBackAnim.Draw(g2d);
+					gengarAttBackAnim.Draw(g2d);
 				}
 						
 			}
@@ -422,11 +476,11 @@ public class Charizard extends Enemigos {
 			{
 				if(mirandoFrente && atacando==false)
 				{
-					charizardFlyFrontAnim.Draw(g2d);
+					gengarFlyFrontAnim.Draw(g2d);
 				}
 				else if(!mirandoFrente && atacando==false )
 				{
-					charizardFlyBackAnim.Draw(g2d);
+					gengarFlyBackAnim.Draw(g2d);
 				}
 			}
 			
@@ -436,22 +490,22 @@ public class Charizard extends Enemigos {
 		
 			if(mirandoFrente)
 			{
-				charizardFlyFrontAnim.Draw(g2d);
+				gengarFlyFrontAnim.Draw(g2d);
 			}
 			else
 			{
-				charizardFlyBackAnim.Draw(g2d);
+				gengarFlyBackAnim.Draw(g2d);
 			}
 		break;
 		
 		case MOVIENDOSEALEATORIO:
 		{	if(mirandoFrente)
 			{
-				charizardFlyFrontAnim.Draw(g2d);
+				gengarFlyFrontAnim.Draw(g2d);
 			}
 			else
 			{
-				charizardFlyBackAnim.Draw(g2d);
+				gengarFlyBackAnim.Draw(g2d);
 			}
 		break;
 		
@@ -462,12 +516,22 @@ public class Charizard extends Enemigos {
 			
 			if(mirandoFrente)
 			{
-				charizardDañadoFrontAnim.Draw(g2d);
+				gengarDañadoFrontAnim.Draw(g2d);
 			}
 			else
 			{
-				charizardDañadoBackAnim.Draw(g2d);
+				gengarDañadoBackAnim.Draw(g2d);
 			}
+		break;
+		case TP:
+			
+			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transparenciaDeImagen));
+			float imageMultiplier = 2 - transparenciaDeImagen; // usando imagemultiplier hacemos mas grande la imagen
+	        int newImagenAncho = (int)(gengarFade.getWidth() * imageMultiplier);
+	        int newImagenAlto = (int)(gengarFade.getHeight() * imageMultiplier);
+	        int newImagencordY = (int)(gengarFade.getHeight()/2 * (1-transparenciaDeImagen));
+	        g2d.drawImage(gengarFade , cordX, cordY - newImagencordY, newImagenAncho, newImagenAlto, null);
+	        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
 		break;
 			
 		
@@ -475,7 +539,7 @@ public class Charizard extends Enemigos {
 	}
 	public void UpdateHitbox()
 	{
-		r2D.setRect(cordX, cordY, charizardFlyFrontImg.getWidth()/4, charizardFlyFrontImg.getHeight());
+		r2D.setRect(cordX, cordY, gengarFlyFrontImg.getWidth()/4, gengarFlyFrontImg.getHeight());
 	}
 	
 	public int getCordX()
@@ -489,7 +553,7 @@ public class Charizard extends Enemigos {
 	
 	public void  tocaAcercarse()
 	{
-		if(Ia==Ia.ATACANDO || Ia==Ia.DAÑADO) // && Ia!=Ia.DAÑADO
+		if(Ia==Ia.ATACANDO || Ia==Ia.DAÑADO || Ia==Ia.TP) // && Ia!=Ia.DAÑADO
 		{
 		
 		}
@@ -515,11 +579,11 @@ public class Charizard extends Enemigos {
 		int r;
 		if(mirandoFrente)
 		{
-			r = cordX+280;
+			r = cordX+100;
 		}
 		else
 		{
-			r = cordX-80;
+			r = cordX-20;
 		}	
 		return r;
 	}
@@ -529,14 +593,16 @@ public class Charizard extends Enemigos {
 		int r;
 		if(mirandoFrente)
 		{
-			r = cordY+80;
+			r = cordY+60;
 		}
 		else
 		{
-			r = cordY+80;
+			r = cordY+60;
 		}	
 		return r;
 	}
+	
+	
 
 	public boolean getDireccion() {
 		// TODO Auto-generated method stub
@@ -545,12 +611,12 @@ public class Charizard extends Enemigos {
 
 	public int getVelmovProy() {
 		// TODO Auto-generated method stub
-		return 10;
+		return 8;
 	}
 
 	public int GetNumFrames() {
 		// TODO Auto-generated method stub
-		return 5;
+		return 4;
 	}
 
 	public BufferedImage getProy() {
@@ -570,3 +636,6 @@ public class Charizard extends Enemigos {
 		return daño;
 	}
 }
+
+
+

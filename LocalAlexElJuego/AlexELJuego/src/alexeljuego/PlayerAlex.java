@@ -191,8 +191,8 @@ public class PlayerAlex {
 		this.cordY=cordY;
 		this.velMovX = 0;
         this.velMovY = 0;
-	    this.acelX = 0.2;
-	    this.acelY = 0.2;
+	    this.acelX = 0.4;
+	    this.acelY = 0.4;
 	    this.frenadoX = 0.5;
 	    this.frenadoY = 0.5;
 	    this.numSpell=0;
@@ -324,7 +324,7 @@ public class PlayerAlex {
 		
 		if(isEspadaUp)
 		{
-			rec= new Rectangle(cordX, cordY, playerNotMovingEspadaFrontImg.getWidth(), playerNotMovingEspadaFrontImg.getHeight());;
+			rec= new Rectangle(cordX, cordY, playerNotMovingEspadaFrontImg.getWidth()/2, playerNotMovingEspadaFrontImg.getHeight());;
 			if(isAtacando)
 			{
 				
@@ -337,12 +337,12 @@ public class PlayerAlex {
 		{
 			
 			
-			rec=  new Rectangle(cordX, cordY, playerNotMovingBaculoFrontImg.getWidth(), playerNotMovingBaculoFrontImg.getHeight());
+			rec=  new Rectangle(cordX, cordY, playerNotMovingBaculoFrontImg.getWidth()/2, playerNotMovingBaculoFrontImg.getHeight());
 		}
 		else if(isArcoUp)
 		{
 		 
-			rec= new Rectangle(cordX, cordY, playerNotMovingArcoFrontImg.getWidth(), playerNotMovingEspadaFrontImg.getHeight());
+			rec= new Rectangle(cordX, cordY, playerNotMovingArcoFrontImg.getWidth()/2, playerNotMovingEspadaFrontImg.getHeight());
 		}
 		
 	}

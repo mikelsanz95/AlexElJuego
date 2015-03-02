@@ -100,7 +100,7 @@ public class Game{
 			}				
 			case STAGE1:
 			{
-				
+			//charizard
 			URL charizardDañadoFront = this.getClass().getResource("resources/images/stage1/charizardDañadoBack.png");	
 			Charizard.charizardDañadoFront = ImageIO.read(charizardDañadoFront);
 			
@@ -133,6 +133,52 @@ public class Game{
 			
 			URL barraVidaEnemUrl  = this.getClass().getResource("resources/images/barraVidaEnem.png");		
 			Enemigos.barraVidaEnem = ImageIO.read(barraVidaEnemUrl);
+			// gengar
+			
+
+			URL gengarMovFrontUrl  = this.getClass().getResource("resources/images/stage1/gengarMovFront.png");	
+			Gengar.gengarFlyFrontImg= ImageIO.read(gengarMovFrontUrl);  
+			
+			
+			URL gengarMovBackUrl  = this.getClass().getResource("resources/images/stage1/gengarMovBack.png");		
+			Gengar.gengarFlyBackImg= ImageIO.read(gengarMovBackUrl);                                                   
+			                                                                                                          
+			URL gengarAttFrontUrl  = this.getClass().getResource("resources/images/stage1/gengarAttFront.png");		      
+			Gengar.gengarAttFrontImg= ImageIO.read(gengarAttFrontUrl);                                                 
+			                                                                                                          
+			URL gengarAttBackImgUrl  = this.getClass().getResource("resources/images/stage1/gengarAttBack.png");		      
+			Gengar.gengarAttBackImg= ImageIO.read(gengarAttBackImgUrl);                                                
+			                                                                                                          
+			
+			URL gengarDañadoFront = this.getClass().getResource("resources/images/stage1/gengarDañadoBack.png");	
+			Gengar.gengarDañadoFront = ImageIO.read(gengarDañadoFront);
+			
+			URL gengarDañadoBack = this.getClass().getResource("resources/images/stage1/gengarDañadoFront.png");	
+			Gengar.gengarDañadoBack =ImageIO.read(gengarDañadoBack);
+			
+			URL proyectilFrontUrl1 = this.getClass().getResource("resources/images/stage1/bolaSombraFront.png");		
+			Gengar.proyectilFront= ImageIO.read(proyectilFrontUrl1);
+			
+			URL proyectilBackUrl1 = this.getClass().getResource("resources/images/stage1/bolaSombraBack.png");		
+			Gengar.proyectilBack= ImageIO.read(proyectilBackUrl1);
+			
+			URL gengarFadeUrl = this.getClass().getResource("resources/images/stage1/gengarFade.png");	
+			Gengar.gengarFade=ImageIO.read(gengarFadeUrl);
+			
+			// squirtle
+			
+			
+			URL squirtleMovBackUrl  = this.getClass().getResource("resources/images/stage1/squirtleMovBack.png");		
+			Squirtle.squirtleMovBackImg= ImageIO.read(squirtleMovBackUrl);			
+			URL sqirtleMovFrontUrl  = this.getClass().getResource("resources/images/stage1/squirtleMovFront.png");		
+			Squirtle.squirtleMovFrontImg= ImageIO.read(sqirtleMovFrontUrl);  
+			URL squirtleSpinUrl = this.getClass().getResource("resources/images/stage1/squirtleCapaMov.png");		
+			Squirtle.squirlteSpinImg= ImageIO.read(squirtleSpinUrl);  
+			URL squirtleDañoFront  = this.getClass().getResource("resources/images/stage1/squirtleIncAttFront.png");		
+			Squirtle.squirtleIncAttFront= ImageIO.read(squirtleDañoFront);  
+			URL squirtleDañoBack  = this.getClass().getResource("resources/images/stage1/squirtleIncAttBack.png");		
+			Squirtle.squirtleIncAttBack= ImageIO.read(squirtleDañoBack);  
+			
 			
 			break;
 			}
@@ -169,7 +215,7 @@ public class Game{
 			enemigosList = new ArrayList<Enemigos>();
 			proyecEnemList = new ArrayList<ProyectilEnem>();
 			gameStage=GameStage.STAGE1;
-			
+			random= new Random();
 	}
    
  
@@ -180,7 +226,7 @@ public class Game{
 		{
 		case ENDLESS:
 		{
-			player.Update(gameTime);
+		player.Update(gameTime);
 		createProyectil(gameTime);
 		updateProyectil();
 		
@@ -197,7 +243,18 @@ public class Game{
 			createProyectilEnemigo(gameTime, enemigosList.get(i));
 			}
 			updateProyectilEnemigo(gameTime);
-			createCharizard(gameTime);
+//			createSquirtle(gameTime);
+			
+			int i =random.nextInt(2)+1;
+			if(i==1 )
+			{
+				createCharizard(gameTime);
+			}
+			else
+			{
+				createGengar(gameTime);
+			}
+			
 			updateEnemigos(gameTime);
 			
 			break;
@@ -238,7 +295,12 @@ public class Game{
 			p.Update();
 			
 			}
-			
+			Rectangle2D proyRec = new Rectangle(proyecEnemList.get(i).cordX, proyecEnemList.get(i).cordY, proyecEnemList.get(i).proyectilImg.getWidth()/proyecEnemList.get(i).numFrames, proyecEnemList.get(i).proyectilImg.getWidth());
+			if(proyRec.intersects(player.rec))
+			{
+				player.health-=proyecEnemList.get(i).daño;
+				proyecEnemList.remove(i);
+			}
 		}	
 		
 	}
@@ -295,9 +357,26 @@ public class Game{
 		}
 		}
 	}
+	private void createSquirtle(long gameTime) 
+	{	if(enemigosList.size()<1)
+		if(gameTime - tiempoSpawnCharizard >= Framework.secEnNanosec*6 )
+		{
+			random= new Random();
+			Squirtle squrti = new Squirtle();
+			int cordenX = random.nextInt((Framework.anchoFrame)-Charizard.charizardFlyFrontImg.getWidth()/4) + 1; 
+			
+			int cordenY = random.nextInt((Framework.altoFrame)- Charizard.charizardFlyFrontImg.getHeight()) + Framework.altoFrame/3+1;  
+			
+			squrti.Inicializar(cordenX,cordenY);
+			
+			enemigosList.add(squrti);
+			tiempoSpawnCharizard=gameTime;
+		}
+		
+	}
 	
 	private void createCharizard(long gameTime) 
-	{	if(enemigosList.size()<1)
+	{	if(enemigosList.size()<2)
 		if(gameTime - tiempoSpawnCharizard >= Framework.secEnNanosec )
 		{
 			random= new Random();
@@ -309,6 +388,24 @@ public class Game{
 			chari.Inicializar(cordenX,cordenY);
 			
 			enemigosList.add(chari);
+			tiempoSpawnCharizard=gameTime;
+		}
+		
+	}
+	
+	private void createGengar(long gameTime) 
+	{	if(enemigosList.size()<2)
+		if(gameTime - tiempoSpawnCharizard >= Framework.secEnNanosec )
+		{
+			random= new Random();
+			Gengar gengi = new Gengar();
+			int cordenX = random.nextInt((Framework.anchoFrame)-Gengar.gengarFlyFrontImg.getWidth()/2) + 1; 
+			
+			int cordenY = random.nextInt((Framework.altoFrame)- Gengar.gengarFlyFrontImg.getHeight()) + Framework.altoFrame/3+1;  
+			
+			gengi.Inicializar(cordenX,cordenY);
+			
+			enemigosList.add(gengi);
 			tiempoSpawnCharizard=gameTime;
 		}
 		
